@@ -1,0 +1,26 @@
+<svg width="680" height="680" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4fd6"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <clipPath id="squircle">
+      <rect x="40" y="40" width="600" height="600" rx="120"/>
+    </clipPath>
+  </defs>
+
+  <rect x="40" y="40" width="600" height="600" rx="120" fill="url(#bgGrad)"/>
+
+  <g clip-path="url(#squircle)">
+    <path d="M340 82 C340 82 185 270 185 398 C185 484 254 552 340 552 C426 552 495 484 495 398 C495 270 340 82 340 82 Z"
+          fill="#2196c4" stroke="none"/>
+    <g fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="210,390 340,262 470,390"/>
+      <polyline points="238,368 238,478 442,478 442,368"/>
+      <line x1="298" y1="478" x2="298" y2="408"/>
+      <line x1="382" y1="478" x2="382" y2="408"/>
+      <line x1="298" y1="408" x2="382" y2="408"/>
+      <rect x="308" y="305" width="64" height="56" rx="4"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "name": "MVP Customer - Acme Water Service",
+  "short_name": "MVP Customer",
+  "description": "Your Acme Water Service customer portal. View your equipment, service visits, invoices, and water test reports.",
+  "start_url": "/customer.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1520",
+  "theme_color": "#0b1520",
+  "categories": ["utilities", "business"],
+  "icons": [
+    {
+      "src": "customer-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "customer-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

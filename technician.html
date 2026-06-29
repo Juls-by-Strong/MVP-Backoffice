@@ -1,0 +1,3599 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="metro" data-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MVP Backoffice - Technician</title>
+<link rel="manifest" href="/manifest-tech.json">
+<meta name="theme-color" content="#ffffff" id="meta-theme-color">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MVP Tech">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Prisma';
+    src: url('/Prisma.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+ /* SNEP DARK (default) */
+  :root,
+  [data-theme="snep"][data-mode="dark"] {
+    --ink:        #e8edf4;
+    --ink-dim:    #9baabb;
+    --paper:      #0d1117;
+    --mist:       rgba(120,160,210,0.18);
+    --mist-solid: #1a2332;
+    --slate:      #7a94b0;
+    --water:      #2a8fff;
+    --air:        #12c4a8;
+    --warn:       #ef5350;
+    --gold:       #f5c842;
+    --card:       rgba(255,255,255,0.055);
+    --card-border:rgba(120,170,240,0.18);
+    --radius:     10px;
+    --radius-lg:  14px;
+    --shadow:     0 4px 24px rgba(0,10,30,0.45);
+    --glass-blur: blur(18px) saturate(1.6);
+    --topbar-h:   56px;
+    --ok:         #16a34a;
+    --topbar-bg:  rgba(13,17,23,0.92);
+    --modal-bg:   #111927;
+    --mobile-nav-bg: rgba(10,18,32,0.95);
+    --meta-theme: #0d1117;
+ /* Semantic status tokens */
+    --info:        #8b5cf6;
+    --info-2:      #6366f1;
+    --info-3:      #0891b2;
+    --success:     #10b981;
+    --danger:      #ef4444;
+    --neutral:     #6b7280;
+    --warn-bg:     rgba(245,158,11,0.18);
+    --warn-fg:     #f5c842;
+    --danger-bg:   rgba(239,68,68,0.18);
+    --danger-fg:   #fca5a5;
+    --success-bg:  rgba(16,185,129,0.18);
+    --success-fg:  #6ee7b7;
+    --info-bg:     rgba(139,92,246,0.18);
+    --info-fg:     #c4b5fd;
+    --accent-bg:   rgba(42,143,255,0.18);
+    --accent-fg:   #93c5fd;
+    --neutral-bg:  rgba(120,140,170,0.14);
+    --neutral-fg:  #9baabb;
+  }
+ /* SNEP LIGHT */
+  [data-theme="snep"][data-mode="light"] {
+    --ink:        #0f1923;
+    --ink-dim:    #3a5068;
+    --paper:      #f0f4f9;
+    --mist:       rgba(42,143,255,0.10);
+    --mist-solid: #dde8f5;
+    --slate:      #5a7a98;
+    --water:      #1a72e8;
+    --air:        #0aab92;
+    --warn:       #e53935;
+    --gold:       #d4a017;
+    --card:       #ffffff;
+    --card-border:rgba(42,100,200,0.15);
+    --radius:     10px;
+    --radius-lg:  14px;
+    --shadow:     0 4px 24px rgba(20,60,120,0.12);
+    --glass-blur: blur(18px) saturate(1.6);
+    --topbar-h:   56px;
+    --ok:         #16a34a;
+    --topbar-bg:  rgba(240,244,249,0.92);
+    --modal-bg:   #ffffff;
+    --mobile-nav-bg: rgba(240,244,249,0.97);
+    --meta-theme: #f0f4f9;
+ /* Semantic status tokens */
+    --info:        #7c3aed;
+    --info-2:      #4f46e5;
+    --info-3:      #0e7490;
+    --success:     #059669;
+    --danger:      #dc2626;
+    --neutral:     #6b7280;
+    --warn-bg:     #fef3c7;
+    --warn-fg:     #92400e;
+    --danger-bg:   #fee2e2;
+    --danger-fg:   #991b1b;
+    --success-bg:  #d1fae5;
+    --success-fg:  #065f46;
+    --info-bg:     #ede9fe;
+    --info-fg:     #5b21b6;
+    --accent-bg:   #dbeafe;
+    --accent-fg:   #1e40af;
+    --neutral-bg:  #f3f4f6;
+    --neutral-fg:  #6b7280;
+  }
+ /* METRO DARK */
+  [data-theme="metro"][data-mode="dark"] {
+    --ink:        #f1f1f1;
+    --ink-dim:    #aaaaaa;
+    --paper:      #1a1a1a;
+    --mist:       rgba(200,200,200,0.10);
+    --mist-solid: #2a2a2a;
+    --slate:      #888888;
+    --water:      #0078d4;
+    --air:        #50e3c2;
+    --warn:       #e81123;
+    --gold:       #ffb900;
+    --card:       rgba(255,255,255,0.06);
+    --card-border:rgba(200,200,200,0.14);
+    --radius:     2px;
+    --radius-lg:  2px;
+    --shadow:     0 2px 8px rgba(0,0,0,0.4);
+    --glass-blur: none;
+    --topbar-h:   56px;
+    --ok:         #107c10;
+    --topbar-bg:  rgba(26,26,26,0.95);
+    --modal-bg:   #212121;
+    --mobile-nav-bg: rgba(20,20,20,0.97);
+    --meta-theme: #1a1a1a;
+ /* Semantic status tokens (Metro Dark) */
+    --info:        #b146c2;
+    --info-2:      #5c2d91;
+    --info-3:      #00b7c3;
+    --success:     #107c10;
+    --danger:      #e81123;
+    --neutral:     #767676;
+    --warn-bg:     rgba(255,185,0,0.18);
+    --warn-fg:     #ffb900;
+    --danger-bg:   rgba(232,17,35,0.18);
+    --danger-fg:   #ff6b78;
+    --success-bg:  rgba(16,124,16,0.22);
+    --success-fg:  #4caf4c;
+    --info-bg:     rgba(177,70,194,0.18);
+    --info-fg:     #d1a8e0;
+    --accent-bg:   rgba(0,120,212,0.18);
+    --accent-fg:   #60b0f0;
+    --neutral-bg:  rgba(255,255,255,0.06);
+    --neutral-fg:  #a0a8b0;
+  }
+ /* METRO LIGHT */
+  [data-theme="metro"][data-mode="light"] {
+    --ink:        #1a1a1a;
+    --ink-dim:    #444444;
+    --paper:      #ffffff;
+    --mist:       rgba(0,120,212,0.08);
+    --mist-solid: #e8f0fb;
+    --slate:      #666666;
+    --water:      #0078d4;
+    --air:        #008272;
+    --warn:       #e81123;
+    --gold:       #d83b01;
+    --card:       #f3f3f3;
+    --card-border:rgba(0,0,0,0.12);
+    --radius:     2px;
+    --radius-lg:  2px;
+    --shadow:     0 1px 4px rgba(0,0,0,0.1);
+    --glass-blur: none;
+    --topbar-h:   56px;
+    --ok:         #107c10;
+    --topbar-bg:  rgba(255,255,255,0.95);
+    --modal-bg:   #f3f3f3;
+    --mobile-nav-bg: rgba(255,255,255,0.97);
+    --meta-theme: #ffffff;
+ /* Semantic status tokens (Metro Light) */
+    --info:        #5c2d91;
+    --info-2:      #5c2d91;
+    --info-3:      #008295;
+    --success:     #107c10;
+    --danger:      #d32f2f;
+    --neutral:     #6e6e6e;
+    --warn-bg:     #fff4ce;
+    --warn-fg:     #826200;
+    --danger-bg:   #fde7e9;
+    --danger-fg:   #a4262c;
+    --success-bg:  #dff6dd;
+    --success-fg:  #0e5e0e;
+    --info-bg:     #efe6f7;
+    --info-fg:     #5c2d91;
+    --accent-bg:   #deecf9;
+    --accent-fg:   #004578;
+    --neutral-bg:  #edebe9;
+    --neutral-fg:  #605e5c;
+  }
+
+ * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'DM Sans',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+ /* LOGIN */
+  #login-screen {
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--paper);
+    padding:20px;
+  }
+  .login-box {
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:40px 36px;
+    width:100%;
+    max-width:420px;
+  }
+  .login-logo {
+    font-family:'Prisma','DM Serif Display',serif;
+    font-size:22px;
+    color:var(--air);
+    text-align:center;
+    margin-bottom:6px;
+    letter-spacing:0.04em;
+  }
+  .login-sub { text-align:center; color:var(--slate); font-size:13px; margin-bottom:28px; }
+  .login-box label { display:block; font-size:12px; font-weight:600; color:var(--slate); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .login-box input[type=email], .login-box input[type=password] {
+    width:100%; padding:10px 14px; border-radius:8px;
+    border:1px solid var(--card-border);
+    background:rgba(255,255,255,0.06);
+    color:var(--ink); font-size:15px; margin-bottom:16px;
+  }
+  .login-box input:focus { outline:none; border-color:var(--air); }
+  .btn-primary {
+    width:100%; padding:12px; background:var(--air); color:#fff;
+    border:none; border-radius:8px; font-size:15px; font-weight:600;
+    cursor:pointer; margin-top:4px;
+  }
+  .btn-primary:hover { opacity:0.9; }
+  .login-error { color:var(--warn); font-size:13px; margin-top:10px; text-align:center; display:none; }
+
+ /* APP SHELL */
+  #app { display:none; }
+  .topbar {
+    position:sticky; top:0; z-index:100;
+    background:var(--topbar-bg, rgba(13,17,23,0.92));
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--card-border);
+    padding:0 20px;
+    padding-top:env(safe-area-inset-top);
+    display:flex; align-items:center; gap:12px;
+    min-height:calc(52px + env(safe-area-inset-top));
+  }
+  .topbar-brand {
+    font-family:'Prisma','DM Serif Display',serif;
+    font-size:14px; color:var(--air); letter-spacing:0.04em; flex:1;
+  }
+  .topbar-nav { display:flex; gap:4px; }
+  .nav-btn {
+    padding:5px 12px; border-radius:7px; border:none; background:none;
+    cursor:pointer; font-size:12px; font-weight:500; color:var(--slate);
+    font-family:'DM Sans',sans-serif; transition:all .15s;
+  }
+  .nav-btn.active, .nav-btn:hover { background:var(--mist); color:var(--air); }
+  .topbar-logout {
+    font-size:12px; padding:5px 10px; border-radius:7px; border:none;
+    background:none; color:var(--slate); cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+  .topbar-logout:hover { color:var(--warn); }
+
+  .main {
+    padding:24px 24px calc(72px + env(safe-area-inset-bottom));
+    max-width:960px; margin:0 auto; width:100%;
+  }
+  .page { display:none; }
+  .page.active { display:block; }
+
+ /* CARDS */
+  .card {
+    background:var(--card); border:1px solid var(--card-border);
+    border-radius:var(--radius-lg); padding:16px 18px;
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(200,230,255,0.14), inset 0 -1px 0 rgba(0,0,30,0.15);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/blk_chrome.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .card > * { position: relative; z-index: 1; }
+  .stat-card { padding:18px 20px; }
+  .stat-label { font-size:11px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; color:var(--slate); margin-bottom:6px; }
+  .stat-value { font-size:28px; font-weight:700; color:var(--ink); }
+  .stat-sub   { font-size:12px; color:var(--slate); margin-top:3px; }
+  .stats-row  { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+
+ /* Snep Light - swap to lighter chrome texture (matches admin.html) */
+  [data-theme="snep"][data-mode="light"] .card::before {
+    background-image: url('/chrome.jpg');
+    opacity: 0.14;
+    mix-blend-mode: multiply;
+  }
+ /* Metro - flat, no blur/texture, left accent stripe (matches admin.html) */
+  [data-theme="metro"] .card {
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    box-shadow: none; border-radius: 4px; background-image: none;
+    border-left: 3px solid var(--water);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-right: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+  }
+  [data-theme="metro"] .card::before { display: none; }
+  [data-theme="metro"][data-mode="light"] .card {
+    border-left: 3px solid var(--water);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-right: 1px solid rgba(0,0,0,0.04);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+ /* SECTION LABELS */
+  .section-label {
+    font-size:11px; font-weight:700; letter-spacing:1px;
+    text-transform:uppercase; color:var(--slate);
+    margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;
+  }
+
+ /* BUTTONS */
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1px solid transparent; cursor:pointer; font-size:13px; font-weight:500; font-family:'DM Sans',sans-serif; transition:all .15s; }
+  .btn-blue  { background:var(--water); color:#fff; border-color:var(--water); }
+  .btn-teal  { background:var(--air); color:#fff; border-color:var(--air); }
+  .btn-ghost { background:transparent; color:var(--ink); border-color:var(--card-border); }
+  .btn-ghost:hover { background:var(--mist); }
+  .btn-warn  { background:var(--warn); color:#fff; border-color:var(--warn); }
+  .btn-sm    { padding:4px 10px; font-size:12px; }
+
+ /* JOB CARDS */
+  .job-card {
+    background:var(--card); border:1px solid var(--card-border);
+    border-radius:var(--radius); padding:16px 18px;
+    margin-bottom:12px; cursor:pointer; transition:border-color .15s;
+  }
+  .job-card:hover { border-color:var(--air); }
+  .job-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+  .job-name { font-size:15px; font-weight:600; }
+  .job-time { font-size:13px; color:var(--air); font-weight:600; }
+  .job-address { font-size:13px; color:var(--slate); margin-bottom:6px; }
+  .job-meta { font-size:12px; color:var(--slate); display:flex; gap:12px; flex-wrap:wrap; }
+  .job-actions { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+
+ /* BADGES */
+  .badge {
+    display:inline-block; padding:2px 8px; border-radius:10px;
+    font-size:11px; font-weight:600; text-transform:uppercase;
+  }
+  .badge-ok     { background:var(--success-bg);  color:var(--success-fg); }
+  .badge-blue   { background:rgba(42,143,255,0.15); color:var(--water); }
+  .badge-warn   { background:rgba(245,200,66,0.15); color:var(--gold); }
+  .badge-err    { background:rgba(239,83,80,0.15);  color:var(--warn); }
+  .badge-gray   { background:rgba(120,148,176,0.15);color:var(--slate); }
+  .badge-teal   { background:rgba(18,196,168,0.15); color:var(--air); }
+
+ /* MODALS */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.6); z-index:200;
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--modal-bg, #111927); border:1px solid var(--card-border);
+    border-radius:16px; width:calc(100% - 32px); max-width:560px;
+    max-height:90vh; overflow-y:auto;
+  }
+  .modal-header { padding:20px 24px 16px; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; }
+  .modal-title  { font-size:16px; font-weight:700; }
+  .modal-close  { background:none; border:none; color:var(--slate); font-size:22px; cursor:pointer; line-height:1; }
+  .modal-body   { padding:20px 24px; }
+  .modal-footer { padding:16px 24px; border-top:1px solid var(--card-border); display:flex; gap:8px; justify-content:flex-end; }
+
+ /* FORMS */
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  .form-group label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--slate); }
+  .form-group input, .form-group select, .form-group textarea {
+    padding:9px 12px; border-radius:8px; border:1px solid var(--card-border);
+    background:rgba(255,255,255,0.06); color:var(--ink); font-size:14px;
+    font-family:'DM Sans',sans-serif;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--air); }
+  .form-group select option { background:var(--modal-bg); color:var(--ink); }
+
+ /* INVOICE */
+  .inv-section { margin-bottom:24px; }
+  .inv-line { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--mist); gap:12px; }
+  .inv-line-desc { flex:1; font-size:14px; }
+  .inv-line-price { font-size:14px; font-weight:600; white-space:nowrap; }
+  .inv-total-row { display:flex; justify-content:space-between; padding:8px 0; font-size:14px; }
+  .inv-total-row.grand { font-size:17px; font-weight:700; color:var(--air); border-top:1px solid var(--card-border); padding-top:12px; margin-top:4px; }
+
+ /* CUSTOMER DETAIL PANEL */
+  #page-customer { animation:slideIn .2s ease; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .detail-section { margin-bottom:20px; }
+  .detail-section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--slate); margin-bottom:8px; }
+
+ /* TABLE */
+  table { width:100%; border-collapse:collapse; }
+  th { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--slate); padding:10px 12px; text-align:left; border-bottom:1px solid var(--card-border); }
+  td { padding:11px 12px; border-bottom:1px solid var(--mist); font-size:13px; }
+
+ /* TOAST */
+  #toast {
+    position:fixed; bottom:calc(68px + env(safe-area-inset-bottom));
+    right:16px; left:16px; max-width:360px; margin:0 auto;
+    padding:12px 18px; border-radius:10px; font-size:14px; font-weight:500;
+    z-index:999; display:none; text-align:center;
+    background:var(--mist-solid); color:var(--ink); border:1px solid var(--card-border); box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  }
+  #toast.error { background:var(--danger-bg); color:var(--danger-fg); border-color:var(--danger); }
+  #toast.success { background:var(--success-bg); color:var(--success-fg); border-color:var(--success); }
+
+ /* LOADING */
+  .loading { display:flex; align-items:center; justify-content:center; padding:40px; }
+  .spinner { width:28px; height:28px; border:3px solid var(--mist); border-top-color:var(--air); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+ /* MOBILE NAV */
+  .mobile-nav {
+    display:none;
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--mobile-nav-bg, rgba(10,18,32,0.95));
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    z-index:150;
+    border-top:1px solid var(--card-border);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .mobile-nav-btn {
+    flex:1; background:none; border:none;
+    color:var(--slate); opacity:0.65;
+    font-family:'DM Sans',sans-serif; font-size:10px; font-weight:500;
+    padding:8px 2px 10px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    transition:color .2s,opacity .2s; min-height:52px;
+  }
+  .mobile-nav-btn.active { color:var(--air); opacity:1; }
+  .mobile-nav-btn .nav-icon { font-size:20px; line-height:1; }
+
+  .mobile-more-drawer {
+    display:none;
+    position:fixed;
+    bottom:calc(52px + env(safe-area-inset-bottom));
+    left:0; right:0;
+    background:var(--mobile-nav-bg, rgba(10,18,32,0.97));
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    border-top:1px solid var(--card-border);
+    z-index:149; padding:12px 0 8px;
+  }
+  .mobile-more-drawer.open { display:block; }
+  .more-drawer-item {
+    display:flex; align-items:center; gap:14px;
+    padding:13px 24px; background:none; border:none; width:100%;
+    text-align:left; color:var(--ink); font-family:'DM Sans',sans-serif;
+    font-size:15px; font-weight:500; cursor:pointer; transition:background .15s;
+  }
+  .more-drawer-item:active { background:var(--mist); }
+  .more-drawer-item .item-icon { font-size:20px; width:28px; text-align:center; }
+  .more-drawer-separator { height:1px; background:var(--card-border); margin:6px 16px; }
+
+ /* CATEGORY TREE */
+  .cat-item { padding:8px 12px; border-radius:7px; cursor:pointer; font-size:13px; color:var(--slate); transition:all .15s; }
+  .cat-item:hover, .cat-item.active { background:var(--mist); color:var(--air); }
+  .cat-children { padding-left:14px; }
+
+ /* PAYMENT ITEMS */
+  .pay-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--mist); }
+  .pay-amount { font-weight:600; color:var(--ok); }
+
+ /* RESPONSIVE */
+  @media (max-width:768px) {
+    .topbar-nav { display:none; }
+    .topbar-logout { display:none; }
+    .mobile-nav { display:flex; }
+    .main { padding:16px 12px calc(72px + env(safe-area-inset-bottom)); }
+    .stats-row { grid-template-columns:1fr 1fr; gap:10px; }
+    .stat-value { font-size:22px; }
+    .form-row { grid-template-columns:1fr; }
+    .form-group.full { grid-column:1; }
+    .form-group input, .form-group select, .form-group textarea { font-size:16px; min-height:44px; }
+    .modal { border-radius:20px 20px 0 0; position:fixed; bottom:0; left:0; right:0; width:100%; max-width:100%; margin:0; }
+    .modal-overlay.open { align-items:flex-end; }
+  }
+  @media (min-width:769px) {
+    .mobile-nav { display:none; }
+    .mobile-more-drawer { display:none; }
+    .mobile-more-drawer.open {
+      display:block;
+      position:fixed;
+      top:calc(var(--topbar-h) + 8px);
+      bottom:auto;
+      left:auto;
+      right:20px;
+      width:260px;
+      border-radius:var(--radius-lg);
+      border:1px solid var(--card-border);
+      box-shadow:var(--shadow);
+      max-height:80vh;
+      overflow-y:auto;
+    }
+  }
+ /* THEME TOGGLE */
+  .theme-toggle-group {
+    display:flex; gap:4px; align-items:center;
+    background:var(--mist); border-radius:8px; padding:3px;
+  }
+  .theme-btn {
+    padding:3px 9px; border-radius:6px; border:none; cursor:pointer;
+    font-size:11px; font-weight:600; font-family:'DM Sans',sans-serif;
+    color:var(--slate); background:transparent; transition:all .15s;
+    white-space:nowrap;
+  }
+  .theme-btn.active { background:var(--card-border); color:var(--air); }
+  .theme-sep { width:1px; height:16px; background:var(--card-border); }
+
+ /* INSTALL MODAL */
+  .install-step {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--mist);
+  }
+  .install-step:last-child { border-bottom:none; }
+  .install-step-num {
+    width:26px; height:26px; border-radius:50%; background:var(--air);
+    color:#fff; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .install-step-text { font-size:13px; line-height:1.5; color:var(--ink); }
+  .install-step-text strong { color:var(--air); }
+
+ /* Light-mode input fixes */
+  [data-mode="light"] .form-group input,
+  [data-mode="light"] .form-group select,
+  [data-mode="light"] .form-group textarea,
+  [data-mode="light"] .login-box input[type=email],
+  [data-mode="light"] .login-box input[type=password] {
+    background:var(--card); color:var(--ink); border-color:var(--card-border);
+  }
+  [data-mode="light"] .form-group select option { background:var(--modal-bg); color:var(--ink); }
+  [data-mode="light"] body { background:var(--paper); }
+
+/*
+   v260506d - TECH THEMING UPLIFT (parity with customer)
+   - Topbar icon-style quick toggles (theme + mode)
+   - SNEP brushed-chrome titlebar + bottom-nav textures
+   - Aggressive Metro flattening (no radius/shadows/transforms)
+   - Bottom-nav icons fade OUT on hover
+ */
+
+ /* Topbar icon button (matches customer style) */
+  .topbar-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    opacity: 0.65;
+    font-size: 18px;
+    line-height: 1;
+    width: 36px;
+    height: 36px;
+    min-height: 44px;
+    min-width: 44px;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  .topbar-icon-btn:hover {
+    opacity: 1;
+    background: var(--mist);
+  }
+  .topbar-icon-btn:focus-visible {
+    outline: 2px solid var(--air);
+    outline-offset: 2px;
+  }
+
+ /* Bottom-nav icons fade OUT on hover */
+  .mobile-nav-btn:hover { opacity: 0.25; transition: opacity 0.15s; }
+  .mobile-nav-btn.active:hover { opacity: 1; }
+
+/* SNEP DARK: dark brushed metal on topbar */
+[data-theme="snep"][data-mode="dark"] .topbar {
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.05) 0%,
+      rgba(255,255,255,0.02) 35%,
+      rgba(0,0,0,0.10) 78%,
+      rgba(0,0,0,0.20) 100%
+    ),
+    url('data:image/webp;base64,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');
+  background-size: auto, auto 200%;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  border-bottom: 1px solid #000;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.55);
+}
+[data-theme="snep"][data-mode="dark"] .mobile-nav {
+  background:
+    linear-gradient(180deg,
+      rgba(0,0,0,0.18) 0%,
+      rgba(0,0,0,0.05) 30%,
+      rgba(255,255,255,0.03) 100%
+    ),
+    url('data:image/webp;base64,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');
+  background-size: auto, auto 200%;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  border-top: 1px solid #000;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+
+/* SNEP LIGHT: light brushed chrome with dark text */
+[data-theme="snep"][data-mode="light"] .topbar {
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(220,228,238,0.30) 45%,
+      rgba(120,140,170,0.20) 100%
+    ),
+    url('data:image/webp;base64,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');
+  background-size: auto, auto 200%;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  border-bottom: 1px solid rgba(80,110,150,0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(80,110,150,0.30);
+}
+[data-theme="snep"][data-mode="light"] .mobile-nav {
+  background:
+    linear-gradient(180deg,
+      rgba(120,140,170,0.20) 0%,
+      rgba(220,228,238,0.30) 55%,
+      rgba(255,255,255,0.55) 100%
+    ),
+    url('data:image/webp;base64,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');
+  background-size: auto, auto 200%;
+  background-position: center, center;
+  background-repeat: no-repeat, repeat;
+  border-top: 1px solid rgba(80,110,150,0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(80,110,150,0.20);
+}
+
+/* SNEP LIGHT: text on chrome should be dark, not light */
+[data-theme="snep"][data-mode="light"] .topbar-brand,
+[data-theme="snep"][data-mode="light"] .nav-btn,
+[data-theme="snep"][data-mode="light"] .topbar-logout,
+[data-theme="snep"][data-mode="light"] .topbar-icon-btn {
+  color: #1a2433;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+[data-theme="snep"][data-mode="light"] .nav-btn:hover { background: rgba(20,40,70,0.08); }
+[data-theme="snep"][data-mode="light"] .topbar-icon-btn:hover { background: rgba(20,40,70,0.08); }
+
+/* METRO: AGGRESSIVELY FLAT (Win 8 Start screen aesthetic) */
+/* No radius. No shadows. No gradients. No transforms.
+   Saturated solid tile colors with white text. */
+[data-theme="metro"] .card,
+[data-theme="metro"] .modal,
+[data-theme="metro"] .login-box,
+[data-theme="metro"] .badge,
+[data-theme="metro"] .btn,
+[data-theme="metro"] .btn-primary,
+[data-theme="metro"] .topbar-icon-btn,
+[data-theme="metro"] .form-group input,
+[data-theme="metro"] .form-group select,
+[data-theme="metro"] .form-group textarea,
+[data-theme="metro"] .login-box input {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* No hover/active scale anywhere - Metro is motionless */
+[data-theme="metro"] .btn:active,
+[data-theme="metro"] .btn-primary:active,
+[data-theme="metro"] .nav-btn:active,
+[data-theme="metro"] .mobile-nav-btn:active,
+[data-theme="metro"] .more-drawer-item:active,
+[data-theme="metro"] .topbar-icon-btn:active {
+  transform: none !important;
+  filter: none !important;
+}
+/* Metro topbar/bottom-nav - flat solids, no chrome textures */
+[data-theme="metro"] .topbar,
+[data-theme="metro"] .mobile-nav {
+  background-image: none !important;
+  background: var(--topbar-bg) !important;
+  box-shadow: none !important;
+}
+/* Metro toast - flat */
+[data-theme="metro"] #toast {
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* Metro: square the badge dots */
+[data-theme="metro"] .badge { border-radius: 0 !important; }
+
+/* SERVICE MAP */
+#dash-map-container { height:280px; position:relative; border-radius:0; overflow:hidden; }
+#dash-map { height:100%; width:100%; z-index:1; }
+.leaflet-pane  { z-index:1 !important; }
+.leaflet-top, .leaflet-bottom { z-index:2 !important; }
+.leaflet-popup { z-index:3 !important; }
+#dash-map-controls {
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  z-index:10; display:flex; gap:6px; align-items:center;
+  background:rgba(10,18,32,0.82); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(140,190,255,0.18); border-radius:8px;
+  padding:6px 10px; box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  max-width:92%; flex-wrap:wrap; justify-content:center;
+}
+html[data-theme="metro"] #dash-map-controls { background:rgba(0,100,180,0.92); border-color:rgba(255,255,255,0.2); backdrop-filter:none; }
+html[data-theme="snep"][data-mode="light"] #dash-map-controls { background:rgba(200,220,248,0.9); border-color:rgba(80,140,220,0.25); }
+.map-toggle-btn {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.8); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+  padding:5px 14px; border-radius:5px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+}
+.map-toggle-btn.active { background:var(--air); border-color:var(--air); color:#fff; }
+html[data-theme="snep"][data-mode="light"] .map-toggle-btn { color:rgba(10,30,70,0.75); background:rgba(255,255,255,0.4); border-color:rgba(80,140,220,0.25); }
+html[data-theme="snep"][data-mode="light"] .map-toggle-btn.active { background:var(--air); color:#fff; border-color:var(--air); }
+.map-divider { width:1px; height:18px; background:rgba(255,255,255,0.18); margin:0 2px; }
+.map-due-label { font-size:11px; color:rgba(255,255,255,0.7); white-space:nowrap; display:flex; align-items:center; gap:5px; }
+html[data-theme="snep"][data-mode="light"] .map-due-label { color:rgba(10,30,70,0.7); }
+#dash-map-status {
+  position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+  z-index:10; font-size:11px; color:rgba(255,255,255,0.65);
+  background:rgba(10,18,32,0.7); padding:3px 10px; border-radius:4px;
+  pointer-events:none; white-space:nowrap;
+}
+
+/* DASH CARD HEADER (shared pattern) */
+.dash-card { margin-bottom:16px; padding:0; }
+.dash-card-head {
+  padding:12px 16px; border-bottom:1px solid var(--mist);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.dash-card-title { font-weight:600; font-size:13px; }
+.dash-card-title .meta { font-weight:400; font-size:11px; color:var(--slate); margin-left:6px; }
+
+/* CLOCK + LEAD CARDS */
+.clock-card { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px 14px; text-align:center; min-height:96px; }
+.clock-card .clock-value { font-size:20px; font-weight:700; margin-top:4px; }
+.clock-card .clock-sub   { font-size:11px; color:var(--slate); margin-top:2px; }
+
+</style>
+</head>
+<body>
+
+<!--  LOGIN  -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">MVP Backoffice</div>
+    <div class="login-sub">Technician Portal</div>
+    <form id="login-form" autocomplete="on">
+      <div class="form-group" style="margin-bottom:14px">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" placeholder="tech@example.com" autocomplete="username">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--slate);margin-bottom:16px;cursor:pointer;font-weight:400">
+        <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer" checked>
+        Remember me on this device
+      </label>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!--  APP  -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">MVP</div>
+    <div class="topbar-nav">
+      <button class="nav-btn active" onclick="showPage('dashboard')">Dash</button>
+      <button class="nav-btn" onclick="showPage('appts')">Appts</button>
+      <button class="nav-btn" onclick="showPage('customers-list')">Customers</button>
+      <button class="nav-btn" id="desktop-more-btn" onclick="toggleMoreDrawer()">More</button>
+    </div>
+    <button class="topbar-icon-btn" onclick="openCreateAppointment()" title="New Appointment" aria-label="New Appointment" style="font-size:19px;font-weight:700">+</button>
+    <div class="topbar-quick-toggles" style="margin-right:4px;display:flex;align-items:center;gap:2px">
+      <button class="topbar-icon-btn" onclick="quickToggleMode()" id="quick-mode-btn" title="Toggle light/dark" aria-label="Toggle light or dark mode"></button>
+      <button class="topbar-icon-btn" onclick="quickToggleTheme()" id="quick-theme-btn" title="Toggle theme" aria-label="Switch between Snep and Metro themes">▦</button>
+    </div>
+    <button class="topbar-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div>
+          <div style="font-size:22px;font-weight:700" id="dash-greeting">Good morning</div>
+          <div style="font-size:13px;color:var(--slate)" id="dash-date"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadDashboard()"> Refresh</button>
+      </div>
+
+      <!--  SERVICE MAP  -->
+      <div class="card dash-card">
+        <div class="dash-card-head">
+          <div class="dash-card-title"> Service Map <span class="meta" id="dash-map-appt-count"></span></div>
+          <button class="btn btn-ghost btn-sm" onclick="toggleMapSection()"><span id="dash-map-toggle-label">Hide</span></button>
+        </div>
+        <div id="dash-map-section">
+          <div id="dash-map-container">
+            <div id="dash-map"></div>
+            <div id="dash-map-controls">
+              <button class="map-toggle-btn active" id="map-btn-today" onclick="setMapView('today')">Today</button>
+              <button class="map-toggle-btn" id="map-btn-week" onclick="setMapView('week')">This Week</button>
+              <div class="map-divider"></div>
+              <label class="map-due-label" style="cursor:pointer">
+                <input type="checkbox" id="map-show-due" onchange="refreshMapPins()" style="width:13px;height:13px;cursor:pointer;accent-color:var(--air)">
+                Nearby Due / Overdue
+              </label>
+            </div>
+            <div id="dash-map-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!--  TODAY'S SCHEDULE  -->
+      <div class="card dash-card">
+        <div class="dash-card-head">
+          <div class="dash-card-title"> <span id="dash-today-title">Today's Schedule</span> <span class="meta" id="dash-today-date"></span></div>
+          <button class="btn btn-sm btn-ghost" id="dash-today-toggle-btn" onclick="toggleTodayWeekView()">This Week</button>
+        </div>
+        <div id="dash-today-jobs" style="font-size:12px;max-height:260px;overflow-y:auto">
+          <div class="loading" style="padding:14px"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!--  OPEN INVOICES  -->
+      <div class="card dash-card">
+        <div class="dash-card-head">
+          <div class="dash-card-title"> Open Invoices</div>
+          <button class="btn btn-sm btn-ghost" onclick="toggleDashExpand('dash-open-invoices')" id="dash-inv-all-btn">All</button>
+        </div>
+        <div id="dash-open-invoices" style="padding:0 0 4px;font-size:12px;max-height:260px;overflow-y:auto">
+          <div class="loading" style="padding:14px"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!--  CLOCK IN/OUT + WEEKLY HOURS + LEAD CAPTURE  -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="dash-grid">
+        <div class="card dash-card clock-card" style="margin-bottom:0">
+          <div class="dash-card-title" style="margin-bottom:4px" id="clock-label">Clock In / Clock Out</div>
+          <button class="btn btn-teal btn-sm" id="clock-btn" onclick="toggleClock()" style="margin-top:6px">Clock In</button>
+          <div class="clock-sub" id="clock-status-sub"></div>
+        </div>
+        <div class="card dash-card clock-card" style="margin-bottom:0;cursor:pointer" onclick="openWeeklyHours()" title="View weekly hours detail">
+          <div class="dash-card-title">This Week's Hours</div>
+          <div class="clock-value" id="clock-weekly-hours">-</div>
+          <div class="clock-sub">hours logged · tap for detail</div>
+        </div>
+      </div>
+
+      <!--  CAPTURE LEAD / REFERRAL  -->
+      <div class="card dash-card" style="padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div class="dash-card-title"> Capture Lead / Referral</div>
+          <div style="font-size:11px;color:var(--slate);margin-top:3px">Send a new lead straight to the booking form</div>
+        </div>
+        <button class="btn btn-blue btn-sm" onclick="window.open('https://example.com/book.html','_blank')">+ New Lead</button>
+      </div>
+    </div>
+
+    <!-- TODAY'S JOBS -->
+    <div class="page" id="page-today">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div>
+          <div style="font-size:22px;font-weight:700">Today's Jobs</div>
+          <div style="font-size:13px;color:var(--slate)" id="today-date"></div>
+        </div>
+        <button class="btn btn-teal btn-sm" onclick="openCreateAppointment()">+ New Appt</button>
+      </div>
+      <div id="today-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="page" id="page-schedule">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="font-size:22px;font-weight:700">My Schedule</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="date" id="schedule-date" style="padding:6px 10px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px">
+          <button class="btn btn-ghost btn-sm" onclick="loadSchedule()">Load</button>
+        </div>
+      </div>
+      <div id="schedule-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- UNASSIGNED -->
+    <div class="page" id="page-unassigned">
+      <div style="font-size:22px;font-weight:700;margin-bottom:20px">Unassigned Jobs</div>
+      <div id="unassigned-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- APPTS (placeholder - full monthly/weekly view coming next) -->
+    <div class="page" id="page-appts">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn btn-ghost btn-sm" onclick="navApptsMonth(-1)">‹</button>
+          <div style="font-size:18px;font-weight:700;min-width:140px;text-align:center" id="appts-month-label">-</div>
+          <button class="btn btn-ghost btn-sm" onclick="navApptsMonth(1)">›</button>
+          <button class="btn btn-ghost btn-sm" onclick="goToCurrentMonth()">Today</button>
+        </div>
+        <button class="btn btn-teal btn-sm" onclick="openCreateAppointment()">+ New Appt</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-blue" id="appts-filter-mine" onclick="setApptsFilter('mine')">My Jobs</button>
+        <button class="btn btn-sm btn-ghost" id="appts-filter-unassigned" onclick="setApptsFilter('unassigned')">Unassigned</button>
+      </div>
+      <div id="appts-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- CUSTOMERS LIST -->
+    <div class="page" id="page-customers-list">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px">
+        <div style="font-size:22px;font-weight:700">Customers</div>
+        <button class="btn btn-teal btn-sm" onclick="openAddCustomer()">+ Add Customer</button>
+      </div>
+      <div class="search-wrap" style="margin-bottom:14px">
+        <input type="text" id="cust-list-search" placeholder="Search by name or phone…" oninput="searchCustomerList()" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px">
+      </div>
+      <div id="cust-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- CUSTOMER / APPOINTMENT DETAIL -->
+    <div class="page" id="page-customer">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="goBack()"> Back</button>
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:700" id="cust-name"></div>
+          <div style="font-size:13px;color:var(--slate)" id="cust-service-type"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a id="btn-call" class="btn btn-ghost btn-sm" href="#" style="display:none;text-decoration:none"> Call</a>
+          <button class="btn btn-ghost btn-sm" onclick="openCustomerProfile()"> Profile</button>
+          <button class="btn btn-ghost btn-sm" onclick="openEditAppointment(currentAppointmentId)"> Edit</button>
+          <button class="btn btn-teal btn-sm" id="btn-complete" onclick="openComplete()"> Complete</button>
+          <button class="btn btn-blue btn-sm" onclick="openInvoice()"> Invoice</button>
+          <button class="btn btn-ghost btn-sm" onclick="openWaterTest()"> Water Test</button>
+          <button class="btn btn-ghost btn-sm" onclick="generateApptReport()"> Report</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="cust-info-grid">
+        <!-- Customer card -->
+        <div class="card">
+          <div class="detail-section-title">Customer</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px" id="cust-fullname"></div>
+          <div style="font-size:13px;color:var(--slate);margin-bottom:4px" id="cust-phone"></div>
+          <div style="font-size:13px;color:var(--slate);margin-bottom:10px" id="cust-email"></div>
+          <div style="font-size:13px;color:var(--slate)" id="cust-address"></div>
+          <div id="cust-maps-link" style="margin-top:10px"></div>
+        </div>
+        <!-- Appointment card -->
+        <div class="card">
+          <div class="detail-section-title">Appointment</div>
+          <div style="font-size:13px;margin-bottom:6px"><strong>Date:</strong> <span id="cust-appt-date"></span></div>
+          <div style="font-size:13px;margin-bottom:6px"><strong>Type:</strong> <span id="cust-appt-type"></span></div>
+          <div style="font-size:13px;margin-bottom:6px"><strong>Status:</strong> <span id="cust-appt-status"></span></div>
+          <div style="font-size:13px;margin-bottom:6px" id="cust-office-notes-row"></div>
+          <div style="font-size:13px" id="cust-booking-source-row"></div>
+        </div>
+      </div>
+
+      <!-- Equipment -->
+      <div class="detail-section">
+        <div class="detail-section-title">Equipment on Account</div>
+        <div id="equip-section" class="card" style="font-size:13px;min-height:40px"></div>
+      </div>
+
+      <!-- Notes -->
+      <div class="detail-section">
+        <div class="detail-section-title" style="margin-bottom:8px">Service Notes</div>
+        <div id="notes-list" class="card" style="font-size:13px;min-height:40px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <textarea id="new-note-text" placeholder="Add a note…" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--ink);font-size:14px;resize:vertical;min-height:70px;font-family:'DM Sans',sans-serif"></textarea>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate);cursor:pointer">
+              <input type="checkbox" id="note-visible"> Visible to customer
+            </label>
+            <button class="btn btn-teal btn-sm" onclick="submitNote()">Add Note</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service history -->
+      <div class="detail-section">
+        <div class="detail-section-title">Service History</div>
+        <div id="service-history" class="card" style="font-size:13px;min-height:40px"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <button class="btn btn-ghost btn-sm" onclick="goBack()"> Back</button>
+        <div style="flex:1;font-size:18px;font-weight:700" id="profile-name">Customer Profile</div>
+      </div>
+      <div id="profile-loading" class="loading"><div class="spinner"></div></div>
+      <div id="profile-content" style="display:none">
+        <!-- Contact -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="detail-section-title" style="margin-bottom:12px">Contact Info</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
+            <div><div style="color:var(--slate);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Name</div><div id="profile-fullname" style="font-weight:600"></div></div>
+            <div><div style="color:var(--slate);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Phone</div>
+              <a id="profile-phone-link" href="#" style="color:var(--water);text-decoration:none;font-weight:600"></a>
+            </div>
+            <div><div style="color:var(--slate);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Email</div><div id="profile-email" style="word-break:break-all"></div></div>
+            <div><div style="color:var(--slate);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Address</div><div id="profile-address"></div></div>
+          </div>
+          <div id="profile-maps-link" style="margin-top:12px"></div>
+        </div>
+        <!-- Equipment -->
+        <div class="detail-section">
+          <div class="detail-section-title">Equipment on Account</div>
+          <div id="profile-equip" class="card" style="font-size:13px;min-height:40px"></div>
+        </div>
+        <!-- Water tests -->
+        <div class="detail-section">
+          <div class="detail-section-title">Water Tests</div>
+          <div id="profile-water-tests" class="card" style="font-size:13px;min-height:40px"></div>
+        </div>
+        <!-- Full service history -->
+        <div class="detail-section">
+          <div class="detail-section-title">Service History</div>
+          <div id="profile-history" class="card" style="font-size:13px;min-height:40px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVOICE PAGE -->
+    <div class="page" id="page-invoice">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="showPage('customer')"> Back</button>
+        <div style="flex:1;font-size:18px;font-weight:700" id="inv-title">Invoice</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="inv-actions"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700" id="inv-number"></div>
+            <div style="font-size:12px;color:var(--slate);margin-top:2px" id="inv-customer-name"></div>
+          </div>
+          <span id="inv-status-badge" class="badge"></span>
+        </div>
+        <div id="inv-lines-section"></div>
+        <div style="margin-top:16px;border-top:1px solid var(--card-border);padding-top:12px" id="inv-totals"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="detail-section-title" style="margin-bottom:12px">Payments</div>
+        <div id="inv-payments"></div>
+        <button class="btn btn-teal btn-sm" style="margin-top:10px" onclick="openPayment()">+ Record Payment</button>
+      </div>
+
+      <button class="btn btn-ghost btn-sm" onclick="openAddLine()">+ Add Line Item</button>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+    <button class="mobile-nav-btn active" id="mnav-dashboard" onclick="showPage('dashboard')">
+      <span class="nav-icon"></span>Dash
+    </button>
+    <button class="mobile-nav-btn" id="mnav-appts" onclick="showPage('appts')">
+      <span class="nav-icon"></span>Appts
+    </button>
+    <button class="mobile-nav-btn" id="mnav-customers-list" onclick="showPage('customers-list')">
+      <span class="nav-icon"></span>Customers
+    </button>
+    <button class="mobile-nav-btn" id="mnav-more" onclick="toggleMoreDrawer()">
+      <span class="nav-icon"></span>More
+    </button>
+  </div>
+
+  <div class="mobile-more-drawer" id="mobile-more-drawer">
+    <button class="more-drawer-item" onclick="showPage('unassigned');toggleMoreDrawer()">
+      <span class="item-icon"></span>Unassigned Jobs
+    </button>
+    <div class="more-drawer-separator"></div>
+    <button class="more-drawer-item" onclick="toast('System-Sizer II is coming soon');toggleMoreDrawer()">
+      <span class="item-icon"></span>System-Sizer II
+    </button>
+    <button class="more-drawer-item" onclick="window.open('http://example.com/t3','_blank');toggleMoreDrawer()">
+      <span class="item-icon"></span>Test Taker's Toolkit
+    </button>
+    <div class="more-drawer-separator"></div>
+    <button class="more-drawer-item" onclick="openInstallModal();toggleMoreDrawer()">
+      <span class="item-icon"></span>Install App
+    </button>
+    <div class="more-drawer-separator"></div>
+    <div style="padding:10px 24px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--slate)">Appearance</div>
+    <div style="padding:6px 24px 12px;display:flex;gap:8px;flex-wrap:wrap">
+      <div class="theme-toggle-group">
+        <button class="theme-btn" id="tbtn-snep-m"  onclick="setTheme('snep')">Snep</button>
+        <div class="theme-sep"></div>
+        <button class="theme-btn" id="tbtn-metro-m" onclick="setTheme('metro')">Metro</button>
+      </div>
+      <div class="theme-toggle-group">
+        <button class="theme-btn" id="tbtn-dark-m"  onclick="setMode('dark')">Dark</button>
+        <div class="theme-sep"></div>
+        <button class="theme-btn" id="tbtn-light-m" onclick="setMode('light')">Light</button>
+      </div>
+    </div>
+    <div class="more-drawer-separator"></div>
+    <button class="more-drawer-item" onclick="doLogout()">
+      <span class="item-icon"></span>Sign Out
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<!--  THEME PICKER (first-run)  -->
+<div class="modal-overlay" id="modal-theme-picker" style="z-index:500">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title"> Welcome to MVP Technician</div>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--slate);margin-bottom:20px;line-height:1.6">
+        Choose how you'd like the interface to look. You can always change this later from the <strong>More</strong> menu.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="theme-picker-card" id="tpick-snep-light" onclick="pickTheme('snep','light')">
+          <div class="theme-picker-swatch" style="background:linear-gradient(135deg,#f0f4f9 60%,#dde8f5);border-color:rgba(42,100,200,0.2)">
+            <span style="font-size:22px">️</span>
+          </div>
+          <div class="theme-picker-label">Snep Light</div>
+          <div class="theme-picker-sub">Airy blue · Glass</div>
+        </button>
+        <button class="theme-picker-card" id="tpick-snep-dark" onclick="pickTheme('snep','dark')">
+          <div class="theme-picker-swatch" style="background:linear-gradient(135deg,#0d1117 60%,#1a2332);border-color:rgba(120,170,240,0.3)">
+            <span style="font-size:22px"></span>
+          </div>
+          <div class="theme-picker-label">Snep Dark</div>
+          <div class="theme-picker-sub">Space blue · Glass</div>
+        </button>
+        <button class="theme-picker-card" id="tpick-metro-light" onclick="pickTheme('metro','light')">
+          <div class="theme-picker-swatch" style="background:linear-gradient(135deg,#ffffff 60%,#f3f3f3);border-color:rgba(0,120,212,0.3)">
+            <span style="font-size:22px"></span>
+          </div>
+          <div class="theme-picker-label">Metro Light</div>
+          <div class="theme-picker-sub">Clean · Flat</div>
+        </button>
+        <button class="theme-picker-card" id="tpick-metro-dark" onclick="pickTheme('metro','dark')">
+          <div class="theme-picker-swatch" style="background:linear-gradient(135deg,#1a1a1a 60%,#212121);border-color:rgba(0,120,212,0.4)">
+            <span style="font-size:22px"></span>
+          </div>
+          <div class="theme-picker-label">Metro Dark</div>
+          <div class="theme-picker-sub">Corporate · Flat</div>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-blue" id="tpick-confirm-btn" onclick="confirmThemePick()">Looks Good </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .theme-picker-card {
+    background: var(--card);
+    border: 2px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 0;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    text-align: center;
+    overflow: hidden;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .theme-picker-card:hover { border-color: var(--water); }
+  .theme-picker-card.active { border-color: var(--air); box-shadow: 0 0 0 3px rgba(18,196,168,0.2); }
+  .theme-picker-swatch {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid transparent;
+  }
+  .theme-picker-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 8px 8px 2px;
+  }
+  .theme-picker-sub {
+    font-size: 11px;
+    color: var(--slate);
+    padding: 0 8px 10px;
+  }
+</style>
+
+<!-- INSTALL PWA MODAL -->
+<div class="modal-overlay" id="modal-install">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title"> Install MVP Tech App</div>
+      <button class="modal-close" onclick="closeModal('modal-install')">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- iOS -->
+      <div id="install-ios" style="display:none">
+        <div style="font-size:13px;color:var(--slate);margin-bottom:16px">Add this app to your iPhone home screen for the full experience - works offline, feels native.</div>
+        <div class="install-step">
+          <div class="install-step-num">1</div>
+          <div class="install-step-text">Tap the <strong>Share</strong> button at the bottom of Safari - it looks like a box with an arrow pointing up ⬆</div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">2</div>
+          <div class="install-step-text">Scroll down and tap <strong>Add to Home Screen</strong></div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">3</div>
+          <div class="install-step-text">Tap <strong>Add</strong> in the top-right corner</div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">4</div>
+          <div class="install-step-text">Open the <strong>MVP Tech</strong> icon from your home screen - you're done!</div>
+        </div>
+        <div style="margin-top:16px;padding:12px 14px;background:var(--mist);border-radius:var(--radius);font-size:12px;color:var(--slate)">
+           Must be opened in <strong>Safari</strong> - Chrome and other browsers on iPhone don't support home screen install.
+        </div>
+      </div>
+
+      <!-- Android -->
+      <div id="install-android" style="display:none">
+        <div style="font-size:13px;color:var(--slate);margin-bottom:16px">Install the app to your Android home screen for quick access and a native feel.</div>
+        <div id="install-android-prompt">
+          <div class="install-step">
+            <div class="install-step-num">1</div>
+            <div class="install-step-text">Tap <strong>Install Now</strong> below - your browser will prompt you to add it to your home screen.</div>
+          </div>
+          <button class="btn btn-teal" style="width:100%;margin-top:12px;justify-content:center" id="btn-pwa-install" onclick="triggerPwaInstall()">Install Now</button>
+        </div>
+        <div id="install-android-manual" style="display:none">
+          <div class="install-step">
+            <div class="install-step-num">1</div>
+            <div class="install-step-text">Tap the <strong>⋮ menu</strong> (three dots) in the top-right of Chrome</div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">2</div>
+            <div class="install-step-text">Tap <strong>Add to Home screen</strong></div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">3</div>
+            <div class="install-step-text">Tap <strong>Add</strong> to confirm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop -->
+      <div id="install-desktop" style="display:none">
+        <div style="font-size:13px;color:var(--slate);margin-bottom:16px">MVP Tech can be installed as a desktop app in Chrome or Edge.</div>
+        <div class="install-step">
+          <div class="install-step-num">1</div>
+          <div class="install-step-text">Look for the <strong>install icon</strong> (⊕) in your browser's address bar</div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">2</div>
+          <div class="install-step-text">Click it and select <strong>Install</strong></div>
+        </div>
+        <div id="install-desktop-btn-wrap" style="display:none;margin-top:12px">
+          <button class="btn btn-teal" style="width:100%;justify-content:center" onclick="triggerPwaInstall()">Install Now</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-install')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!--  MODALS  -->
+
+<!-- Complete Job -->
+<div class="modal-overlay" id="modal-complete">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Mark Job Complete</div>
+      <button class="modal-close" onclick="closeModal('modal-complete')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Completed Date</label>
+          <input type="date" id="complete-date">
+        </div>
+        <div class="form-group">
+          <label>Service Type</label>
+          <select id="complete-service-type"></select>
+        </div>
+        <div class="form-group full">
+          <label>Tech Notes</label>
+          <textarea id="complete-notes" style="min-height:80px" placeholder="What was done…"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Next Service Due</label>
+          <input type="date" id="complete-next-due">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-complete')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitComplete()"> Mark Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Weekly Hours Detail -->
+<div class="modal-overlay" id="modal-weekly-hours">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">Weekly Hours</div>
+      <button class="modal-close" onclick="closeModal('modal-weekly-hours')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <button class="btn btn-ghost btn-sm" onclick="navWeeklyHours(-1)">‹ Prev Week</button>
+        <div style="font-size:13px;font-weight:600" id="wh-range">-</div>
+        <button class="btn btn-ghost btn-sm" onclick="navWeeklyHours(1)">Next Week ›</button>
+      </div>
+      <div id="wh-days"><div class="loading"><div class="spinner"></div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border);font-weight:700">
+        <span>Week Total</span>
+        <span id="wh-total">-</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer -->
+<div class="modal-overlay" id="modal-add-customer">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">+ Add Customer</div>
+      <button class="modal-close" onclick="closeModal('modal-add-customer')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input type="text" id="ac-first-name">
+        </div>
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input type="text" id="ac-last-name">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="ac-phone">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="ac-email">
+        </div>
+        <div class="form-group full">
+          <label>Service Address</label>
+          <input type="text" id="ac-address" placeholder="Street address">
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="ac-city">
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" id="ac-state" maxlength="2" placeholder="IL" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>ZIP</label>
+          <input type="text" id="ac-zip">
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="ac-notes" style="min-height:60px" placeholder="Optional notes…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-customer')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitAddCustomer()">+ Create Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Appointment -->
+<div class="modal-overlay" id="modal-edit-appt">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">Edit Appointment</div>
+      <button class="modal-close" onclick="closeModal('modal-edit-appt')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;font-weight:600;margin-bottom:14px" id="ea-customer-name"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="ea-date">
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="ea-time">
+        </div>
+        <div class="form-group">
+          <label>Service Type</label>
+          <select id="ea-service-type"></select>
+        </div>
+        <div class="form-group">
+          <label>Assigned Technician</label>
+          <select id="ea-technician"><option value="">- Unassigned -</option></select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="ea-status">
+            <option value="confirmed">Confirmed</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Office Notes</label>
+          <textarea id="ea-notes" style="min-height:70px"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between">
+      <button class="btn btn-danger" onclick="cancelAppointmentFromEdit()">Cancel Appointment</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-edit-appt')">Close</button>
+        <button class="btn btn-teal" onclick="submitEditAppt()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Line Item -->
+<div class="modal-overlay" id="modal-add-line">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <div class="modal-title">Add Line Item</div>
+      <button class="modal-close" onclick="closeModal('modal-add-line')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Tab bar -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--card-border);padding-bottom:12px">
+        <button class="btn btn-sm btn-teal" id="tab-service" onclick="switchTab('service')">Service Call</button>
+        <button class="btn btn-sm btn-ghost" id="tab-parts" onclick="switchTab('parts')">Parts</button>
+        <button class="btn btn-sm btn-ghost" id="tab-equipment" onclick="switchTab('equipment')">Equipment</button>
+        <button class="btn btn-sm btn-ghost" id="tab-custom" onclick="switchTab('custom')">Custom</button>
+      </div>
+
+      <!-- Service Call tab -->
+      <div id="tab-content-service">
+        <div class="form-group full" style="margin-bottom:12px">
+          <label>Service Type</label>
+          <select id="line-service-type"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Price ($)</label><input type="number" id="line-service-price" step="0.01" min="0"></div>
+          <div class="form-group"><label>Qty</label><input type="number" id="line-service-qty" value="1" min="1"></div>
+        </div>
+        <div class="form-group full" style="margin-top:12px">
+          <label><input type="checkbox" id="line-service-taxable"> Taxable</label>
+        </div>
+      </div>
+
+      <!-- Parts tab -->
+      <div id="tab-content-parts" style="display:none">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" id="parts-search" placeholder="Search parts…" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--ink);font-size:14px" oninput="searchParts()">
+          <button class="btn btn-ghost btn-sm" onclick="clearPartsSearch()"></button>
+        </div>
+        <div style="display:grid;grid-template-columns:180px 1fr;gap:12px">
+          <div id="cat-tree" style="font-size:13px"></div>
+          <div id="parts-results" style="font-size:13px;max-height:260px;overflow-y:auto"></div>
+        </div>
+        <div id="selected-part-row" style="display:none;margin-top:14px;padding:12px;background:var(--mist);border-radius:8px">
+          <div style="font-weight:600;margin-bottom:8px" id="selected-part-name"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Price ($)</label><input type="number" id="line-part-price" step="0.01" min="0"></div>
+            <div class="form-group"><label>Qty</label><input type="number" id="line-part-qty" value="1" min="1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equipment tab -->
+      <div id="tab-content-equipment" style="display:none">
+        <div id="equip-line-list" style="font-size:13px"></div>
+        <div id="selected-equip-row" style="display:none;margin-top:14px;padding:12px;background:var(--mist);border-radius:8px">
+          <div style="font-weight:600;margin-bottom:8px" id="selected-equip-name"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Price ($)</label><input type="number" id="line-equip-price" step="0.01" min="0"></div>
+            <div class="form-group"><label>Qty</label><input type="number" id="line-equip-qty" value="1" min="1"></div>
+          </div>
+          <div class="form-group full" style="margin-top:8px">
+            <label><input type="checkbox" id="line-equip-taxable" checked> Taxable</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom tab -->
+      <div id="tab-content-custom" style="display:none">
+        <div class="form-row">
+          <div class="form-group full"><label>Description</label><input type="text" id="line-custom-desc" placeholder="Line item description…"></div>
+          <div class="form-group"><label>Price ($)</label><input type="number" id="line-custom-price" step="0.01" min="0"></div>
+          <div class="form-group"><label>Qty</label><input type="number" id="line-custom-qty" value="1" min="1"></div>
+          <div class="form-group full"><label><input type="checkbox" id="line-custom-taxable"> Taxable</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-line')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitLine()">Add to Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Record Payment -->
+<div class="modal-overlay" id="modal-payment">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Record Payment</div>
+      <button class="modal-close" onclick="closeModal('modal-payment')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount ($)</label>
+          <input type="number" id="pay-amount" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Method</label>
+          <select id="pay-method" onchange="techPaymentMethodChanged()">
+            <option value="cash">Cash</option>
+            <option value="check">Check</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="debit_card">Debit Card</option>
+            <option value="zelle">Zelle</option>
+            <option value="venmo">Venmo</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="pay-date">
+        </div>
+        <div class="form-group full" id="pay-check-row" style="display:none">
+          <label>Check #</label>
+          <input type="text" id="pay-check" maxlength="20" placeholder="e.g. 1234">
+        </div>
+        <div class="form-group full">
+          <label>Notes (memo, reference, etc.)</label>
+          <input type="text" id="pay-notes" placeholder="Optional">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitPayment()">Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Water Test Upload -->
+<div class="modal-overlay" id="modal-water-test">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Upload Water Test</div>
+      <button class="modal-close" onclick="closeModal('modal-water-test')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group full">
+          <label>Test Label</label>
+          <input type="text" id="wt-label" placeholder="e.g. Pre-treatment, Post-treatment…">
+        </div>
+        <div class="form-group">
+          <label>Test Date</label>
+          <input type="date" id="wt-date">
+        </div>
+        <div class="form-group full">
+          <label>PDF File</label>
+          <input type="file" id="wt-file" accept="application/pdf">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-water-test')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitWaterTest()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Appointment -->
+<div class="modal-overlay" id="modal-create-appt">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">New Appointment</div>
+      <button class="modal-close" onclick="closeModal('modal-create-appt')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group full" style="margin-bottom:14px">
+        <label>Customer</label>
+        <input type="text" id="ca-search" placeholder="Search by name or phone…" oninput="searchApptCustomer()" autocomplete="off">
+        <div id="ca-results" style="display:none;position:absolute;background:var(--mist-solid);border:1px solid var(--card-border);border-radius:8px;z-index:50;max-height:200px;overflow-y:auto;width:calc(100% - 48px)"></div>
+        <div id="ca-selected" style="display:none;margin-top:8px;padding:8px 12px;background:var(--mist);border-radius:8px;font-size:13px;display:flex;justify-content:space-between;align-items:center">
+          <span id="ca-selected-name"></span>
+          <button class="btn btn-sm btn-ghost" onclick="clearApptCustomer()"></button>
+        </div>
+        <input type="hidden" id="ca-customer-id">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Service Type</label>
+          <select id="ca-service-type"></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="ca-date">
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="ca-time">
+        </div>
+        <div class="form-group">
+          <label>Source</label>
+          <select id="ca-source">
+            <option value="phone">Phone</option>
+            <option value="online">Online</option>
+            <option value="in_person">In Person</option>
+            <option value="referral">Referral</option>
+            <option value="repeat">Repeat Customer</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Office Notes</label>
+          <textarea id="ca-notes" style="min-height:60px" placeholder="Notes for this appointment…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-create-appt')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitCreateAppt()">Create Appointment</button>
+    </div>
+  </div>
+</div>
+
+<!--  SCRIPTS  -->
+<script>
+'use strict';
+
+const API_URL = 'https://example.com/api/public';
+const MVP_VERSION = 'v260616e'; // single source - mirrors api/config/version.php
+const VERSION = MVP_VERSION;   // alias used elsewhere in this file
+
+let accessToken         = null;
+let currentCustomerId   = null;
+let currentAppointmentId = null;
+let currentInvoiceId    = null;
+let currentTechId       = null;
+let pageStack           = [];
+let serviceTypes        = [];
+let catalog             = [];
+let selectedPartId      = null;
+let selectedEquipId     = null;
+let currentTab          = 'service';
+let technicians         = [];
+
+function applyTheme(theme, mode) {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', theme);
+  html.setAttribute('data-mode', mode);
+  const colors = { 'snep-dark':'#0d1117','snep-light':'#f0f4f9','metro-dark':'#1a1a1a','metro-light':'#ffffff' };
+  document.getElementById('meta-theme-color').content = colors[`${theme}-${mode}`] || '#ffffff';
+ // Desktop topbar quick-toggle icons (replaces previous text buttons)
+  const modeBtn  = document.getElementById('quick-mode-btn');
+  const themeBtn = document.getElementById('quick-theme-btn');
+  if (modeBtn) {
+    modeBtn.textContent = mode === 'dark' ? '' : '';
+    modeBtn.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    modeBtn.setAttribute('title',      mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'snep' ? '▦' : '◉';
+    themeBtn.setAttribute('aria-label', theme === 'snep' ? 'Switch to Metro theme' : 'Switch to Snep theme');
+    themeBtn.setAttribute('title',      theme === 'snep' ? 'Switch to Metro' : 'Switch to Snep');
+  }
+ // Mobile drawer buttons (kept as labeled toggles for in-drawer config)
+  ['snep','metro'].forEach(t => document.getElementById(`tbtn-${t}-m`)?.classList.toggle('active', t === theme));
+  ['dark','light'].forEach(m => document.getElementById(`tbtn-${m}-m`)?.classList.toggle('active', m === mode));
+}
+function setTheme(theme) {
+  localStorage.setItem('tech_theme', theme);
+  applyTheme(theme, document.documentElement.getAttribute('data-mode') || 'light');
+}
+function setMode(mode) {
+  localStorage.setItem('tech_mode', mode);
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'metro', mode);
+}
+// Quick-toggle helpers used by the persistent topbar icons
+function quickToggleMode() {
+  const m = document.documentElement.getAttribute('data-mode')  || 'light';
+  const t = document.documentElement.getAttribute('data-theme') || 'metro';
+  setMode(m === 'dark' ? 'light' : 'dark');
+}
+function quickToggleTheme() {
+  const m = document.documentElement.getAttribute('data-mode')  || 'light';
+  const t = document.documentElement.getAttribute('data-theme') || 'metro';
+  setTheme(t === 'snep' ? 'metro' : 'snep');
+}
+// Apply saved theme immediately - before login screen renders
+// First-time users get Metro Light by default. Existing users keep their saved preference.
+(function() {
+  applyTheme(localStorage.getItem('tech_theme') || 'snep', localStorage.getItem('tech_mode') || 'light');
+})();
+
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPrompt = e;
+});
+
+function openInstallModal() {
+  const isIos     = /iP(hone|ad|od)/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  document.getElementById('install-ios').style.display     = 'none';
+  document.getElementById('install-android').style.display = 'none';
+  document.getElementById('install-desktop').style.display = 'none';
+  if (isIos) {
+    document.getElementById('install-ios').style.display = 'block';
+  } else if (isAndroid) {
+    document.getElementById('install-android').style.display = 'block';
+ // Show prompt button only if browser prompt is available
+    document.getElementById('install-android-prompt').style.display = _pwaPrompt ? 'block' : 'none';
+    document.getElementById('install-android-manual').style.display = _pwaPrompt ? 'none' : 'block';
+  } else {
+    document.getElementById('install-desktop').style.display = 'block';
+    document.getElementById('install-desktop-btn-wrap').style.display = _pwaPrompt ? 'block' : 'none';
+  }
+  openModal('modal-install');
+}
+
+async function triggerPwaInstall() {
+  if (!_pwaPrompt) return;
+  _pwaPrompt.prompt();
+  const { outcome } = await _pwaPrompt.userChoice;
+  if (outcome === 'accepted') {
+    _pwaPrompt = null;
+    closeModal('modal-install');
+    toast('App installed! ');
+  }
+}
+
+const _today = new Date();
+document.getElementById('today-date').textContent =
+  _today.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+document.getElementById('dash-date').textContent =
+  _today.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+const hr = _today.getHours();
+document.getElementById('dash-greeting').textContent =
+  hr < 12 ? 'Good morning ' : hr < 17 ? 'Good afternoon ️' : 'Good evening ';
+
+document.getElementById('pay-date').value = _today.toISOString().split('T')[0];
+document.getElementById('wt-date').value  = _today.toISOString().split('T')[0];
+document.getElementById('complete-date').value = _today.toISOString().split('T')[0];
+document.getElementById('schedule-date').value = _today.toISOString().split('T')[0];
+
+// Auto-restore session
+window.addEventListener('load', async () => {
+  const rt = localStorage.getItem('tech_refresh_token') || sessionStorage.getItem('tech_refresh_token');
+  if (rt) {
+    const ok = await tryRefresh();
+    if (ok) {
+      showApp();
+      return;
+    }
+  }
+  document.getElementById('login-screen').style.display = 'flex';
+});
+
+async function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Please enter email and password.'; errEl.style.display = 'block'; return; }
+  try {
+    const r = await fetch(API_URL + '/auth/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password, role:'technician' }),
+    });
+    const data = await r.json();
+    if (!data.access_token) {
+      errEl.textContent = data.error || 'Login failed.';
+      errEl.style.display = 'block';
+      return;
+    }
+    accessToken  = data.access_token;
+    currentTechId = data.user?.user_id || null;
+    const remember = document.getElementById('login-remember')?.checked;
+    if (remember) {
+      localStorage.setItem('tech_refresh_token', data.refresh_token);
+    } else {
+      localStorage.removeItem('tech_refresh_token');
+      sessionStorage.setItem('tech_refresh_token', data.refresh_token);
+    }
+    showApp();
+  } catch(e) {
+    errEl.textContent = 'Cannot reach server.';
+    errEl.style.display = 'block';
+  }
+}
+
+// Wire login form - a real submit event (vs. a bare button onclick) is what
+// lets the browser offer to save the entered credentials.
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('login-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      doLogin();
+    });
+  }
+});
+
+async function tryRefresh() {
+  const rt      = localStorage.getItem('tech_refresh_token') || sessionStorage.getItem('tech_refresh_token');
+  const persist = !!localStorage.getItem('tech_refresh_token');
+  if (!rt) return false;
+  try {
+    const r    = await fetch(API_URL + '/auth/refresh', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ refresh_token: rt }),
+    });
+    const data = await r.json();
+    if (data.access_token) {
+      accessToken   = data.access_token;
+      currentTechId = data.user?.user_id || null;
+      if (persist) localStorage.setItem('tech_refresh_token', data.refresh_token);
+      else         sessionStorage.setItem('tech_refresh_token', data.refresh_token);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function doLogout() {
+  accessToken = null;
+  localStorage.removeItem('tech_refresh_token');
+  sessionStorage.removeItem('tech_refresh_token');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-password').value = '';
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadDashboard();
+  loadServiceTypes();
+  loadTechnicians();
+  preloadCatalog();
+  setTimeout(maybeShowThemePicker, 800);
+}
+
+function maybeShowThemePicker() {
+  if (localStorage.getItem('tech_theme_chosen')) return;
+  const t = document.documentElement.getAttribute('data-theme') || 'snep';
+  const m = document.documentElement.getAttribute('data-mode')  || 'light';
+  document.querySelectorAll('.theme-picker-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tpick-${t}-${m}`)?.classList.add('active');
+  openModal('modal-theme-picker');
+}
+
+function pickTheme(theme, mode) {
+  setTheme(theme);
+  setMode(mode);
+  document.querySelectorAll('.theme-picker-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tpick-${theme}-${mode}`)?.classList.add('active');
+}
+
+function confirmThemePick() {
+  localStorage.setItem('tech_theme_chosen', '1');
+  closeModal('modal-theme-picker');
+ // Chain straight into PWA install instructions as step 2 of onboarding
+  setTimeout(openInstallModal, 300);
+}
+
+async function api(method, path, body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type':'application/json' },
+  };
+  if (accessToken) opts.headers['Authorization'] = `Bearer ${accessToken}`;
+  if (body) opts.body = JSON.stringify(body);
+  let res = await fetch(API_URL + path, opts);
+  if (res.status === 401) {
+    const ok = await tryRefresh();
+    if (ok) {
+      opts.headers['Authorization'] = `Bearer ${accessToken}`;
+      res = await fetch(API_URL + path, opts);
+    } else { doLogout(); return null; }
+  }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = 'none'; }, 3200);
+}
+
+function escHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Renders a customer's name for display: if a company_name is set, the company
+// is shown as the primary (bold) line with the contact's full name as a smaller
+// subtext line beneath it. Residential customers (no company_name) are unchanged -
+// just the contact name on a single line, same as before this feature existed.
+// `row` needs .customer_name (contact full name) and .company_name.
+// `mainStyle` is the inline style for the primary line (defaults to bold, inherited size).
+// `suffix` is optional HTML appended to the END of the primary line only (e.g. a status badge).
+function nameLines(row, mainStyle, suffix) {
+  mainStyle = mainStyle || 'font-weight:600';
+  suffix = suffix || '';
+  const contact = (row && row.customer_name) || '';
+  const company = (row && row.company_name || '').trim();
+  if (company) {
+    return `<div style="${mainStyle}">${escHtml(company)}${suffix}</div>`
+         + `<div style="font-size:11px;color:var(--slate);font-weight:400">${escHtml(contact)}</div>`;
+  }
+  return `<div style="${mainStyle}">${escHtml(contact)}${suffix}</div>`;
+}
+
+function fmt$(n) { return '$' + parseFloat(n || 0).toFixed(2); }
+
+function fmtDate(d) {
+  if (!d) return '-';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':');
+  const hr = parseInt(h);
+  return (hr % 12 || 12) + ':' + m + (hr < 12 ? 'am' : 'pm');
+}
+
+function buildMapsUrl(addr, city, state, zip) {
+  const full = [addr, city, state, zip].filter(Boolean).join(', ');
+  if (!full) return null;
+  const isIos = /iP(hone|ad|od)/.test(navigator.userAgent);
+ // Universal links: open the native app directly when installed (always true
+ // for Apple Maps; Google Maps app on Android if present), and fall back to
+ // the web map gracefully otherwise - more reliable than custom URL schemes
+ // inside a standalone PWA.
+  return isIos
+    ? `https://maps.apple.com/?q=${encodeURIComponent(full)}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(full)}`;
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+const _mnavMap = { dashboard:'mnav-dashboard', appts:'mnav-appts', 'customers-list':'mnav-customers-list' };
+
+function showPage(name, pushToStack = true) {
+  if (pushToStack && name !== 'dashboard') pageStack.push(name);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${name}`)?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`[onclick*="showPage('${name}')"]`).forEach(b => b.classList.add('active'));
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  const mId = _mnavMap[name];
+  if (mId) document.getElementById(mId)?.classList.add('active');
+  closeMoreDrawer();
+
+  if (name === 'dashboard')       loadDashboard();
+  if (name === 'appts')           loadAppts();
+  if (name === 'customers-list')  loadCustomersList();
+  if (name === 'today')       loadToday();
+  if (name === 'schedule')    loadSchedule();
+  if (name === 'unassigned')  loadUnassigned();
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  pageStack.pop();
+  const prev = pageStack.pop() || 'today';
+  showPage(prev, false);
+}
+
+function toggleMoreDrawer() {
+  const drawer = document.getElementById('mobile-more-drawer');
+  const btn    = document.getElementById('mnav-more');
+  const open   = drawer.classList.toggle('open');
+  btn?.classList.toggle('active', open);
+}
+
+function closeMoreDrawer() {
+  document.getElementById('mobile-more-drawer')?.classList.remove('open');
+  document.getElementById('mnav-more')?.classList.remove('active');
+}
+
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('mobile-more-drawer');
+  if (drawer?.classList.contains('open')) {
+    const insideDrawer   = drawer.contains(e.target);
+    const onMobileBtn    = document.getElementById('mnav-more')?.contains(e.target);
+    const onDesktopBtn   = document.getElementById('desktop-more-btn')?.contains(e.target);
+    if (!insideDrawer && !onMobileBtn && !onDesktopBtn) closeMoreDrawer();
+  }
+});
+
+let _dashWeekAppts   = [];
+let _dashTodayJobs   = [];
+let _dashScheduleView = 'today'; // 'today' | 'week'
+
+async function loadDashboard() {
+ // Week range (Mon-Sun) in Chicago time, mirrors admin dashboard logic
+  const chicagoDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago' }).format(new Date());
+  const todayStr  = chicagoDateStr;
+  const localDate = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago' }).format(d);
+  const today     = new Date(chicagoDateStr + 'T12:00:00');
+  const dow       = today.getDay();
+  const mon       = new Date(today); mon.setDate(today.getDate() - ((dow + 6) % 7));
+  const sun       = new Date(mon);   sun.setDate(mon.getDate() + 6);
+  const weekFrom  = localDate(mon);
+  const weekTo    = localDate(sun);
+
+  document.getElementById('dash-greeting').textContent = greetingForHour(new Date().getHours());
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  document.getElementById('dash-today-date').textContent = new Date(todayStr + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+
+  try {
+    const [weekAppts, openInvoices, draftInvoices, due30, due7, clockStatus] = await Promise.all([
+      api('GET', `/tech/appointments?from=${weekFrom}&to=${weekTo}`).catch(() => []),
+      api('GET', '/tech/invoices?status=sent').catch(() => []),
+      api('GET', '/tech/invoices?status=draft').catch(() => []),
+      api('GET', '/tech/schedule?days=30').catch(() => []),
+      api('GET', '/tech/schedule?days=7').catch(() => []),
+      api('GET', '/tech/clock-time').catch(() => null),
+    ]);
+
+    const allOpenInv = [...(openInvoices||[]), ...(draftInvoices||[])];
+    const todayJobs  = (weekAppts||[]).filter(a => a.confirmed_date === todayStr && a.status !== 'cancelled');
+
+    _dashWeekAppts = weekAppts || [];
+    _dashTodayJobs = todayJobs;
+
+    renderScheduleList();
+    renderOpenInvoices(allOpenInv);
+    renderClockStatus(clockStatus);
+    updateMapData(todayJobs, weekAppts||[], due30||[], due7||[]);
+
+  } catch(e) {
+    console.error('Dashboard error:', e);
+    toast('Could not load dashboard data', 'error');
+  }
+}
+
+function greetingForHour(h) {
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function toggleTodayWeekView() {
+  _dashScheduleView = _dashScheduleView === 'today' ? 'week' : 'today';
+  document.getElementById('dash-today-toggle-btn').textContent = _dashScheduleView === 'today' ? 'This Week' : 'Today';
+  document.getElementById('dash-today-title').textContent = _dashScheduleView === 'today' ? "Today's Schedule" : "This Week's Schedule";
+  renderScheduleList();
+}
+
+function renderScheduleList() {
+  const jobs = _dashScheduleView === 'today' ? _dashTodayJobs : _dashWeekAppts.filter(a => a.status !== 'cancelled');
+  const el = document.getElementById('dash-today-jobs');
+  if (!el) return;
+  if (!jobs.length) {
+    el.innerHTML = `<div style="padding:14px;color:var(--slate)">No appointments ${_dashScheduleView === 'today' ? 'scheduled for today' : 'this week'}.</div>`;
+    return;
+  }
+  const statusColors = { confirmed:'#3b82f6', in_progress:'#f59e0b', completed:'#10b981', cancelled:'#ef4444' };
+  const sorted = jobs.slice().sort((a,b) => {
+    const da = (a.confirmed_date||'') + (a.confirmed_time||'');
+    const db = (b.confirmed_date||'') + (b.confirmed_time||'');
+    return da.localeCompare(db);
+  });
+  el.innerHTML = sorted.map(a => {
+    const dateLabel = _dashScheduleView === 'week' && a.confirmed_date
+      ? new Date(a.confirmed_date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+      : null;
+    const timeLabel = a.confirmed_time ? a.confirmed_time.substr(0,5) : '-:--';
+
+    let actions = '';
+    if (a.status === 'confirmed') {
+      actions = `
+        <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();sendOnMyWay(${a.appointment_id})"> Mark OMW</button>
+        <button class="btn btn-sm btn-teal" onclick="event.stopPropagation();startAppointment(${a.appointment_id})">▶ Start Appointment</button>`;
+    } else if (a.status === 'in_progress') {
+      actions = `<button class="btn btn-sm btn-teal" onclick="event.stopPropagation();quickComplete(${a.appointment_id})"> Mark Complete</button>`;
+    }
+
+    return `
+    <div style="padding:10px 16px;border-bottom:1px solid var(--mist)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--water);min-width:${dateLabel?'78px':'44px'};text-align:center">
+            ${dateLabel ? `<div style="font-size:10px">${dateLabel}</div>${timeLabel}` : timeLabel}
+          </div>
+          <div>
+            ${nameLines(a, 'font-weight:600;font-size:13px', ` <span style="margin-left:6px;font-size:10px;background:${statusColors[a.status]||'#6b7280'};color:#fff;border-radius:8px;padding:1px 7px">${a.status.replace('_',' ')}</span>`)}
+            <div style="font-size:11px;color:var(--slate)">${escHtml(a.service_type||'')}</div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-blue" onclick="openCustomer(${a.appointment_id})">Open</button>
+      </div>
+      ${actions ? `<div style="display:flex;gap:6px;margin-top:8px;padding-left:${dateLabel?'90px':'56px'};flex-wrap:wrap">${actions}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function startAppointment(appointmentId) {
+  try {
+    await api('PUT', `/tech/appointments/${appointmentId}`, { status: 'in_progress' });
+    toast('Appointment started ');
+    loadDashboard();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function quickComplete(appointmentId) {
+  await openCustomer(appointmentId);
+  openComplete();
+}
+
+function renderOpenInvoices(invoices) {
+  const el = document.getElementById('dash-open-invoices');
+  if (!el) return;
+  if (!invoices.length) {
+    el.innerHTML = '<div style="padding:14px;color:var(--slate)">No open invoices </div>';
+    return;
+  }
+  el.innerHTML = invoices.map(i => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--mist)">
+      <div>
+        <div style="font-weight:600;font-size:12px">${escHtml(i.invoice_number)}
+          <span style="font-size:10px;background:${i.status==='draft'?'#6b7280':'#f59e0b'};color:#fff;border-radius:8px;padding:1px 6px">${i.status}</span>
+        </div>
+        <div style="font-size:11px;color:var(--slate)">${escHtml(i.company_name || i.customer_name)} · ${i.issue_date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:#ef4444;font-size:13px">${fmt$(i.total)}</div>
+        <button class="btn btn-sm btn-ghost" style="font-size:10px;margin-top:2px" onclick="openInvoiceById(${i.invoice_id})">View</button>
+      </div>
+    </div>`).join('');
+}
+
+// Open an invoice directly by id (used from the dashboard, where we don't yet
+// have the appointment context loaded into currentAppointmentId/currentCustomerId)
+async function openInvoiceById(invoiceId) {
+  try {
+    const inv = await api('GET', `/tech/invoices/${invoiceId}`);
+    currentCustomerId    = inv.customer_id;
+    currentAppointmentId = inv.appointment_id || null;
+    currentInvoiceId     = invoiceId;
+    showPage('invoice');
+    await renderInvoice();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function toggleDashExpand(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const expanded = el.style.maxHeight === 'none';
+  el.style.maxHeight = expanded ? '260px' : 'none';
+}
+
+let _clockOpenEntryId  = null;
+let _clockOpenSinceStr = null; // "YYYY-MM-DD HH:MM:SS" Chicago wall-clock, as stored by the backend
+let _clockTickInterval = null;
+
+// Current wall-clock time in America/Chicago, expressed the same "naive
+// local" way the backend stores clocked_in_at - so subtracting the two
+// gives the correct Chicago elapsed time regardless of the device's own
+// timezone setting.
+function chicagoNowAsLocalDate() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago',
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false,
+  }).formatToParts(new Date());
+  const o = {};
+  parts.forEach(p => { if (p.type !== 'literal') o[p.type] = p.value; });
+ // hour can come back as "24" at midnight in some engines - normalize
+  if (o.hour === '24') o.hour = '00';
+  return new Date(`${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}:${o.second}`);
+}
+
+function hhmm(totalMinutes) {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h}:${String(m).padStart(2,'0')}`;
+}
+
+function tickClockButton() {
+  const btn = document.getElementById('clock-btn');
+  if (!btn || !_clockOpenSinceStr) return;
+  const since   = new Date(_clockOpenSinceStr.replace(' ', 'T'));
+  const elapsed = chicagoNowAsLocalDate().getTime() - since.getTime();
+  const mins    = Math.max(0, Math.floor(elapsed / 60000));
+  btn.textContent = `Clock Out · ${hhmm(mins)}`;
+}
+
+function renderClockStatus(status) {
+  const btn   = document.getElementById('clock-btn');
+  const sub   = document.getElementById('clock-status-sub');
+  const hours = document.getElementById('clock-weekly-hours');
+  if (!btn) return;
+
+  clearInterval(_clockTickInterval);
+  _clockTickInterval = null;
+
+  if (!status) {
+    sub.textContent = '';
+    return;
+  }
+
+  hours.textContent = hhmm(Math.round((status.weekly_hours ?? 0) * 60));
+
+  if (status.clocked_in && status.open_entry) {
+    _clockOpenEntryId  = status.open_entry.entry_id;
+    _clockOpenSinceStr = status.open_entry.clocked_in_at;
+    btn.classList.remove('btn-teal');
+    btn.classList.add('btn-warn');
+    tickClockButton();
+    _clockTickInterval = setInterval(tickClockButton, 1000);
+    const since = new Date(_clockOpenSinceStr.replace(' ', 'T'));
+    sub.textContent = 'Clocked in since ' + since.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }) + ' CT';
+  } else {
+    _clockOpenEntryId  = null;
+    _clockOpenSinceStr = null;
+    btn.textContent = 'Clock In';
+    btn.classList.remove('btn-warn');
+    btn.classList.add('btn-teal');
+    sub.textContent = '';
+  }
+}
+
+async function toggleClock() {
+  try {
+    if (_clockOpenEntryId) {
+      await api('PUT', `/tech/clock-time/${_clockOpenEntryId}`, {});
+      toast('Clocked out ');
+    } else {
+      await api('POST', '/tech/clock-time', {});
+      toast('Clocked in ');
+    }
+    const status = await api('GET', '/tech/clock-time');
+    renderClockStatus(status);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+let _whWeekStart = null; // YYYY-MM-DD (Monday) currently shown in the modal
+
+function mondayOf(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+  const m = new Date(dt.setDate(diff));
+  return m.toISOString().split('T')[0];
+}
+
+async function openWeeklyHours() {
+  _whWeekStart = mondayOf(new Date());
+  openModal('modal-weekly-hours');
+  await loadWeeklyHours();
+}
+
+async function navWeeklyHours(delta) {
+  const d = new Date(_whWeekStart + 'T12:00:00');
+  d.setDate(d.getDate() + delta * 7);
+  _whWeekStart = mondayOf(d);
+  await loadWeeklyHours();
+}
+
+async function loadWeeklyHours() {
+  document.getElementById('wh-days').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const data = await api('GET', `/tech/clock-time/history?week_start=${_whWeekStart}`);
+    const rangeFmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    document.getElementById('wh-range').textContent = `${rangeFmt(data.week_start)} - ${rangeFmt(data.week_end)}`;
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const fmtTime12 = (str) => new Date(str.replace(' ', 'T')).toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+
+    document.getElementById('wh-days').innerHTML = data.days.map(d => {
+      const entriesHtml = (d.entries || []).length
+        ? d.entries.map(e => `<div style="font-size:11px;color:var(--slate)">${fmtTime12(e.clocked_in_at)} - ${fmtTime12(e.clocked_out_at)}</div>`).join('')
+        : '';
+      return `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--card-border)${d.date===todayStr?';background:var(--mist)':''}">
+        <div>
+          <div style="font-weight:600;font-size:13px">${escHtml(d.day_name)}</div>
+          ${entriesHtml || '<div style="font-size:11px;color:var(--slate)">No clock time</div>'}
+          <div style="font-size:11px;color:var(--slate);margin-top:3px">
+            ${d.customers.length ? escHtml(d.customers.join(', ')) : 'No appointments'}
+          </div>
+        </div>
+        <div style="font-weight:700;font-size:14px;white-space:nowrap;margin-left:12px">${hhmm(Math.round(d.hours*60))}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('wh-total').textContent = hhmm(Math.round(data.week_total_hours*60));
+  } catch(e) {
+    document.getElementById('wh-days').innerHTML = `<div style="color:var(--warn);font-size:13px;padding:10px 0">Could not load weekly hours: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function getWeekStart() {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
+}
+
+function getWeekEnd() {
+  const s = getWeekStart();
+  return new Date(s.getTime() + 6 * 86400000);
+}
+
+function renderJobCard(j) {
+  const statusBadge = {
+    confirmed:'badge-blue', completed:'badge-ok', in_progress:'badge-teal',
+    pending:'badge-warn', cancelled:'badge-err', tentative:'badge-gray',
+  }[j.status] || 'badge-gray';
+
+  const mUrl = buildMapsUrl(j.service_address, j.service_city, j.service_state, j.service_zip);
+  const addr = [j.service_address, j.service_city].filter(Boolean).join(', ');
+
+  return `<div class="job-card" onclick="openCustomer(${j.appointment_id})">
+    <div class="job-card-header">
+      <div>
+        ${j.company_name && j.company_name.trim()
+          ? `<div class="job-name">${escHtml(j.company_name)}</div><div style="font-size:11px;color:var(--slate);font-weight:400">${escHtml(j.customer_name)}</div>`
+          : `<div class="job-name">${escHtml(j.customer_name)}</div>`}
+        <span class="badge ${statusBadge}">${j.status}</span>
+      </div>
+      <div class="job-time">${j.confirmed_date ? fmtDate(j.confirmed_date) : '-'}${j.confirmed_time ? ' ' + fmtTime(j.confirmed_time) : ''}</div>
+    </div>
+    <div class="job-address">${escHtml(addr || '-')}${mUrl ? ` <a href="${mUrl}" onclick="event.stopPropagation()" style="font-size:12px;color:var(--water);margin-left:6px"> Maps</a>` : ''}</div>
+    <div class="job-meta">
+      <span> ${escHtml(j.service_type || '-')}</span>
+      ${j.office_notes ? `<span> ${escHtml(j.office_notes.substring(0,50))}${j.office_notes.length>50?'…':''}</span>` : ''}
+    </div>
+    <div class="job-actions">
+      <button class="btn btn-teal btn-sm" onclick="event.stopPropagation();openCustomer(${j.appointment_id})">Open</button>
+      ${j.status !== 'completed' && j.status !== 'cancelled'
+        ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();sendOnMyWay(${j.appointment_id})"> On My Way</button>`
+        : ''}
+      ${j.unassigned
+        ? `<button class="btn btn-blue btn-sm" onclick="event.stopPropagation();claimJob(${j.appointment_id})">Claim</button>`
+        : ''}
+    </div>
+  </div>`;
+}
+
+async function loadToday() {
+  document.getElementById('today-list').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const jobs  = await api('GET', `/tech/appointments?from=${today}&to=${today}`);
+    const el    = document.getElementById('today-list');
+    if (!jobs || !jobs.length) {
+      el.innerHTML = '<div class="card" style="color:var(--slate);font-size:13px;padding:20px;text-align:center">No jobs scheduled for today</div>';
+      return;
+    }
+    el.innerHTML = jobs.map(j => renderJobCard(j)).join('');
+  } catch(e) { document.getElementById('today-list').innerHTML = '<div style="color:var(--warn)">Could not load jobs</div>'; }
+}
+
+async function loadSchedule() {
+  document.getElementById('schedule-list').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const date = document.getElementById('schedule-date').value || new Date().toISOString().split('T')[0];
+    const jobs = await api('GET', `/tech/appointments?from=${date}&to=${date}`);
+    const el   = document.getElementById('schedule-list');
+    if (!jobs || !jobs.length) {
+      el.innerHTML = '<div class="card" style="color:var(--slate);font-size:13px;padding:20px;text-align:center">No jobs on this date</div>';
+      return;
+    }
+    el.innerHTML = jobs.map(j => renderJobCard(j)).join('');
+  } catch(e) { document.getElementById('schedule-list').innerHTML = '<div style="color:var(--warn)">Could not load schedule</div>'; }
+}
+
+async function loadUnassigned() {
+  document.getElementById('unassigned-list').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const jobs = await api('GET', '/tech/appointments/unassigned');
+    const el   = document.getElementById('unassigned-list');
+    if (!jobs || !jobs.length) {
+      el.innerHTML = '<div class="card" style="color:var(--slate);font-size:13px;padding:20px;text-align:center">No unassigned jobs</div>';
+      return;
+    }
+    el.innerHTML = jobs.map(j => ({ ...j, unassigned: true })).map(j => renderJobCard(j)).join('');
+  } catch(e) { document.getElementById('unassigned-list').innerHTML = '<div style="color:var(--warn)">Could not load unassigned jobs</div>'; }
+}
+
+async function claimJob(appointmentId) {
+  try {
+    await api('POST', `/tech/appointments/${appointmentId}/claim`);
+    toast('Job claimed ');
+    loadUnassigned();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+let _apptsMonthDate = new Date(); // any date within the displayed month
+let _apptsFilter     = 'mine';    // 'mine' | 'unassigned'
+
+function navApptsMonth(delta) {
+  _apptsMonthDate = new Date(_apptsMonthDate.getFullYear(), _apptsMonthDate.getMonth() + delta, 1);
+  loadAppts();
+}
+
+function goToCurrentMonth() {
+  _apptsMonthDate = new Date();
+  loadAppts();
+}
+
+function setApptsFilter(filter) {
+  _apptsFilter = filter;
+  document.getElementById('appts-filter-mine').classList.toggle('btn-blue', filter === 'mine');
+  document.getElementById('appts-filter-mine').classList.toggle('btn-ghost', filter !== 'mine');
+  document.getElementById('appts-filter-unassigned').classList.toggle('btn-blue', filter === 'unassigned');
+  document.getElementById('appts-filter-unassigned').classList.toggle('btn-ghost', filter !== 'unassigned');
+  loadAppts();
+}
+
+async function loadAppts() {
+  const y = _apptsMonthDate.getFullYear();
+  const m = _apptsMonthDate.getMonth();
+  document.getElementById('appts-month-label').textContent =
+    _apptsMonthDate.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+
+  const listEl = document.getElementById('appts-list');
+  listEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  try {
+    if (_apptsFilter === 'unassigned') {
+      const jobs = await api('GET', '/tech/appointments/unassigned');
+      renderApptsList((jobs||[]).map(j => ({ ...j, unassigned: true })));
+      return;
+    }
+    const monthStart = new Date(y, m, 1).toISOString().split('T')[0];
+    const monthEnd   = new Date(y, m + 1, 0).toISOString().split('T')[0];
+    const jobs = await api('GET', `/tech/appointments?from=${monthStart}&to=${monthEnd}`);
+    renderApptsList(jobs || []);
+  } catch(e) {
+    listEl.innerHTML = `<div style="color:var(--warn);font-size:13px;padding:14px">Could not load appointments: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderApptsList(jobs) {
+  const el = document.getElementById('appts-list');
+  if (!jobs.length) {
+    el.innerHTML = `<div class="card" style="color:var(--slate);font-size:13px;padding:20px;text-align:center">No ${_apptsFilter === 'unassigned' ? 'unassigned' : ''} appointments ${_apptsFilter === 'unassigned' ? '' : 'this month'}.</div>`;
+    return;
+  }
+
+ // Group by date (confirmed_date, fallback to requested_date for unassigned items)
+  const groups = {};
+  jobs.forEach(j => {
+    const day = j.confirmed_date || j.requested_date || 'Unscheduled';
+    (groups[day] = groups[day] || []).push(j);
+  });
+  const days = Object.keys(groups).sort();
+
+  const statusColors = { confirmed:'#3b82f6', in_progress:'#f59e0b', completed:'#10b981', cancelled:'#ef4444', pending:'#6b7280' };
+
+  el.innerHTML = days.map(day => {
+    const dayLabel = day === 'Unscheduled' ? 'Unscheduled'
+      : new Date(day + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    const dayJobs = groups[day].slice().sort((a,b) => (a.confirmed_time||'').localeCompare(b.confirmed_time||''));
+
+    const rows = dayJobs.map(a => {
+      let actions = `<button class="btn btn-sm btn-blue" onclick="openCustomer(${a.appointment_id})">Open</button>`;
+      if (a.unassigned) {
+        actions = `<button class="btn btn-sm btn-teal" onclick="claimJobFromAppts(${a.appointment_id})">Claim</button>` + actions;
+      } else {
+        actions = `<button class="btn btn-sm btn-ghost" onclick="openEditAppointment(${a.appointment_id})">Edit</button>` + actions;
+        if (a.status === 'confirmed') {
+          actions += `<button class="btn btn-sm btn-ghost" onclick="sendOnMyWay(${a.appointment_id})"> OMW</button>
+                      <button class="btn btn-sm btn-teal" onclick="startAppointment(${a.appointment_id})">▶ Start</button>`;
+        } else if (a.status === 'in_progress') {
+          actions += `<button class="btn btn-sm btn-teal" onclick="quickComplete(${a.appointment_id})"> Complete</button>`;
+        }
+      }
+      return `
+        <div style="padding:10px 0;border-bottom:1px solid var(--mist)">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:13px;font-weight:700;color:var(--water);min-width:44px;text-align:center">${a.confirmed_time ? a.confirmed_time.substr(0,5) : '-:--'}</div>
+              <div>
+                ${nameLines(a, 'font-weight:600;font-size:13px', ` <span style="margin-left:6px;font-size:10px;background:${statusColors[a.status]||'#6b7280'};color:#fff;border-radius:8px;padding:1px 7px">${(a.status||'pending').replace('_',' ')}</span>`)}
+                <div style="font-size:11px;color:var(--slate)">${escHtml(a.service_type||'')}</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">${actions}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `<div class="card" style="margin-bottom:14px;padding:14px 16px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px;color:var(--air)">${escHtml(dayLabel)}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+async function claimJobFromAppts(appointmentId) {
+  try {
+    await api('POST', `/tech/appointments/${appointmentId}/claim`);
+    toast('Job claimed ');
+    loadAppts();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+let _eaApptId = null;
+
+async function openEditAppointment(appointmentId) {
+  _eaApptId = appointmentId;
+  try {
+    const a = await api('GET', `/tech/appointments/${appointmentId}`);
+    document.getElementById('ea-customer-name').textContent = (a.company_name && a.company_name.trim()) || a.customer_name;
+    document.getElementById('ea-date').value = a.confirmed_date || '';
+    document.getElementById('ea-time').value = a.confirmed_time ? a.confirmed_time.substr(0,5) : '';
+    document.getElementById('ea-notes').value = a.office_notes || '';
+    document.getElementById('ea-status').value = a.status || 'confirmed';
+
+    const stSel = document.getElementById('ea-service-type');
+    stSel.innerHTML = serviceTypes.map(t => `<option value="${t.type_id}">${escHtml(t.name)}</option>`).join('');
+    stSel.value = a.service_type_id;
+
+    const techSel = document.getElementById('ea-technician');
+    techSel.innerHTML = '<option value="">- Unassigned -</option>' +
+      technicians.map(t => `<option value="${t.user_id}">${escHtml(t.first_name + ' ' + t.last_name)}</option>`).join('');
+    techSel.value = a.technician_id || '';
+
+    openModal('modal-edit-appt');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function submitEditAppt() {
+  if (!_eaApptId) return;
+  const date   = document.getElementById('ea-date').value;
+  const time   = document.getElementById('ea-time').value;
+  const stId   = document.getElementById('ea-service-type').value;
+  const techId = document.getElementById('ea-technician').value;
+  const status = document.getElementById('ea-status').value;
+  const notes  = document.getElementById('ea-notes').value.trim();
+  if (!date) return toast('Please choose a date', 'error');
+
+  try {
+    await api('PUT', `/tech/appointments/${_eaApptId}`, {
+      confirmed_date:  date,
+      confirmed_time:  time || '',
+      service_type_id: stId ? parseInt(stId) : undefined,
+      technician_id:   techId,
+      status,
+      office_notes:    notes,
+    });
+    closeModal('modal-edit-appt');
+    toast('Appointment updated ');
+    loadAppts();
+    if (document.getElementById('page-dashboard').classList.contains('active')) loadDashboard();
+    if (document.getElementById('page-customer').classList.contains('active') && currentAppointmentId === _eaApptId) openCustomer(_eaApptId);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function cancelAppointmentFromEdit() {
+  if (!_eaApptId) return;
+  if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+  try {
+    await api('DELETE', `/tech/appointments/${_eaApptId}`);
+    closeModal('modal-edit-appt');
+    toast('Appointment cancelled');
+    loadAppts();
+    if (document.getElementById('page-dashboard').classList.contains('active')) loadDashboard();
+    if (document.getElementById('page-customer').classList.contains('active') && currentAppointmentId === _eaApptId) showPage('dashboard', false);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+let _custListTimeout = null;
+
+async function loadCustomersList() {
+  const el = document.getElementById('cust-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const customers = await api('GET', '/tech/customers');
+    renderCustomerList(customers || []);
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--warn);font-size:13px;padding:14px">Could not load customers: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function searchCustomerList() {
+  clearTimeout(_custListTimeout);
+  const q = document.getElementById('cust-list-search').value.trim();
+  _custListTimeout = setTimeout(async () => {
+    const el = document.getElementById('cust-list');
+    el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const customers = await api('GET', `/tech/customers${q ? '?q=' + encodeURIComponent(q) : ''}`);
+      renderCustomerList(customers || []);
+    } catch(e) {
+      el.innerHTML = `<div style="color:var(--warn);font-size:13px;padding:14px">Could not search customers: ${escHtml(e.message)}</div>`;
+    }
+  }, 300);
+}
+
+function renderCustomerList(customers) {
+  const el = document.getElementById('cust-list');
+  if (!customers.length) {
+    el.innerHTML = '<div class="card" style="color:var(--slate);font-size:13px;padding:20px;text-align:center">No customers found</div>';
+    return;
+  }
+  el.innerHTML = customers.map(c => {
+    const addr = [c.service_address, c.service_city].filter(Boolean).join(', ');
+    const dueLabel = c.next_due ? `Next due ${fmtDate(c.next_due)}` : '';
+    return `<div class="card" style="margin-bottom:10px;padding:14px 16px;cursor:pointer" onclick="openCustomerFromList(${c.customer_id})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div>
+          ${nameLines({customer_name: c.first_name + ' ' + c.last_name, company_name: c.company_name}, 'font-weight:700;font-size:14px')}
+          <div style="font-size:12px;color:var(--slate);margin-top:2px">${escHtml(addr || '-')}</div>
+          ${dueLabel ? `<div style="font-size:11px;color:var(--slate);margin-top:2px">${escHtml(dueLabel)}</div>` : ''}
+        </div>
+        <div style="text-align:right;white-space:nowrap">
+          ${c.phone ? `<a href="tel:+1${c.phone.replace(/\D/g,'')}" onclick="event.stopPropagation()" style="color:var(--water);text-decoration:none;font-size:12px;display:block">${escHtml(c.phone)}</a>` : ''}
+          <span style="font-size:11px;color:var(--slate)">${c.equipment_count||0} equip.</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openCustomerFromList(customerId) {
+  currentCustomerId = customerId;
+  currentAppointmentId = null;
+  showPage('profile');
+  await openCustomerProfile();
+}
+
+function openAddCustomer() {
+  ['ac-first-name','ac-last-name','ac-phone','ac-email','ac-address','ac-city','ac-state','ac-zip','ac-notes']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  openModal('modal-add-customer');
+}
+
+async function submitAddCustomer() {
+  const firstName = document.getElementById('ac-first-name').value.trim();
+  const lastName  = document.getElementById('ac-last-name').value.trim();
+  if (!firstName || !lastName) return toast('First and last name are required', 'error');
+
+  try {
+    const r = await api('POST', '/tech/customers', {
+      first_name: firstName,
+      last_name:  lastName,
+      phone:      document.getElementById('ac-phone').value.trim(),
+      email:      document.getElementById('ac-email').value.trim(),
+      service_address: document.getElementById('ac-address').value.trim() || null,
+      service_city:    document.getElementById('ac-city').value.trim() || null,
+      service_state:   document.getElementById('ac-state').value.trim().toUpperCase() || null,
+      service_zip:     document.getElementById('ac-zip').value.trim() || null,
+      notes:           document.getElementById('ac-notes').value.trim() || null,
+    });
+    closeModal('modal-add-customer');
+    toast('Customer created ');
+    openCustomerFromList(r.customer_id);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function openCustomer(appointmentId) {
+  currentAppointmentId = appointmentId;
+  showPage('customer');
+  document.getElementById('cust-name').textContent = 'Loading…';
+
+  try {
+    const a = await api('GET', `/tech/appointments/${appointmentId}`);
+    currentCustomerId = a.customer_id;
+
+    document.getElementById('cust-name').textContent         = (a.company_name && a.company_name.trim()) || a.customer_name;
+    document.getElementById('cust-service-type').textContent = a.service_type + ' - ' + (a.confirmed_date ? fmtDate(a.confirmed_date) : 'No date');
+    document.getElementById('cust-fullname').innerHTML        = nameLines(a, 'font-size:15px;font-weight:600');
+    document.getElementById('cust-phone').innerHTML = a.phone
+      ? `<a href="tel:+1${a.phone.replace(/\D/g,'')}" style="color:var(--water);text-decoration:none">${escHtml(a.phone)}</a>` : '-';
+    document.getElementById('cust-email').innerHTML = a.email
+      ? `<a href="mailto:${escHtml(a.email)}" style="color:var(--water);text-decoration:none;word-break:break-all">${escHtml(a.email)}</a>` : '-';
+ // Call button
+    const callBtn = document.getElementById('btn-call');
+    if (a.phone) {
+      const digits = a.phone.replace(/\D/g, '');
+      callBtn.href = `tel:+1${digits}`;
+      callBtn.style.display = 'inline-flex';
+    } else {
+      callBtn.style.display = 'none';
+    }
+    document.getElementById('cust-appt-date').textContent    = a.confirmed_date ? fmtDate(a.confirmed_date) + (a.confirmed_time ? ' at ' + fmtTime(a.confirmed_time) : '') : '-';
+    document.getElementById('cust-appt-type').textContent    = a.service_type || '-';
+
+    const sEl = document.getElementById('cust-appt-status');
+    sEl.innerHTML = `<span class="badge ${{'completed':'badge-ok','confirmed':'badge-blue','in_progress':'badge-teal','tentative':'badge-gray','pending':'badge-warn','cancelled':'badge-err'}[a.status]||'badge-gray'}">${a.status}</span>`;
+
+    const addrFull = [a.service_address, a.service_city, a.service_state, a.service_zip].filter(Boolean).join(', ');
+    document.getElementById('cust-address').textContent = addrFull || '-';
+
+    const mUrl = buildMapsUrl(a.service_address, a.service_city, a.service_state, a.service_zip);
+    document.getElementById('cust-maps-link').innerHTML = mUrl
+      ? `<a href="${mUrl}" class="btn btn-ghost btn-sm" style="text-decoration:none"> Open in Maps</a>` : '';
+
+    document.getElementById('cust-office-notes-row').innerHTML = a.office_notes
+      ? `<strong>Office Notes:</strong> ${escHtml(a.office_notes)}` : '';
+    document.getElementById('cust-booking-source-row').innerHTML = a.booking_source
+      ? `<strong>Source:</strong> ${escHtml(a.booking_source)}` : '';
+
+ // Complete button
+    document.getElementById('btn-complete').style.display = a.status === 'completed' ? 'none' : 'inline-flex';
+
+ // Equipment
+    await loadEquipment(a.customer_id);
+
+ // Notes
+    await loadNotes(a.customer_id, appointmentId);
+
+ // Service history
+    await loadServiceHistory(a.customer_id);
+
+  } catch(e) { toast('Could not load appointment: ' + e.message, 'error'); }
+}
+
+async function openCustomerProfile() {
+  if (!currentCustomerId) return toast('No customer loaded', 'error');
+  showPage('profile');
+  document.getElementById('profile-loading').style.display = 'flex';
+  document.getElementById('profile-content').style.display = 'none';
+
+  try {
+    const [c, tests, history] = await Promise.all([
+      api('GET', `/tech/customers/${currentCustomerId}`),
+      api('GET', `/tech/customers/${currentCustomerId}/water-tests`).catch(() => []),
+      api('GET', `/tech/customers/${currentCustomerId}/service-history`).catch(() => []),
+    ]);
+
+    document.getElementById('profile-name').textContent     = (c.company_name && c.company_name.trim()) || `${c.first_name} ${c.last_name}`;
+    document.getElementById('profile-fullname').innerHTML    = nameLines({customer_name: `${c.first_name} ${c.last_name}`, company_name: c.company_name}, 'font-weight:600');
+    document.getElementById('profile-email').innerHTML = c.email
+      ? `<a href="mailto:${escHtml(c.email)}" style="color:var(--water);text-decoration:none;word-break:break-all">${escHtml(c.email)}</a>` : '-';
+
+ // Phone with call link
+    const phoneLinkEl = document.getElementById('profile-phone-link');
+    if (c.phone) {
+      phoneLinkEl.textContent = c.phone;
+      phoneLinkEl.href = `tel:+1${c.phone.replace(/\D/g,'')}`;
+    } else {
+      phoneLinkEl.textContent = '-';
+      phoneLinkEl.removeAttribute('href');
+    }
+
+ // Address
+    const addrFull = [c.service_address, c.service_city, c.service_state, c.service_zip].filter(Boolean).join(', ');
+    document.getElementById('profile-address').textContent = addrFull || '-';
+
+    const mUrl = buildMapsUrl(c.service_address, c.service_city, c.service_state, c.service_zip);
+    document.getElementById('profile-maps-link').innerHTML = mUrl
+      ? `<a href="${mUrl}" class="btn btn-ghost btn-sm" style="text-decoration:none"> Open in Maps</a>` : '';
+
+ // Equipment
+    const equipEl = document.getElementById('profile-equip');
+    const equip = c.equipment || [];
+    equipEl.innerHTML = equip.length
+      ? equip.map(e => {
+          const days   = e.days_until_due ?? null;
+          const status = days === null ? 'badge-gray' : days < 0 ? 'badge-err' : days < 30 ? 'badge-warn' : 'badge-ok';
+          const due    = days === null ? 'No date' : days < 0 ? `Overdue ${Math.abs(days)}d` : `Due in ${days}d`;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--mist)">
+            <div>
+              <div style="font-weight:600">${escHtml(e.type_name)}${e.model ? ' - ' + escHtml(e.model) : ''}</div>
+              ${e.last_service_date ? `<div style="font-size:12px;color:var(--slate)">Last: ${fmtDate(e.last_service_date)}</div>` : ''}
+            </div>
+            <span class="badge ${status}">${escHtml(due)}</span>
+          </div>`;
+        }).join('')
+      : '<div style="color:var(--slate)">No equipment on file</div>';
+
+ // Water tests
+    const wtEl = document.getElementById('profile-water-tests');
+    wtEl.innerHTML = (tests || []).length
+      ? tests.map(t => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--mist)">
+          <div>
+            <div style="font-weight:600;font-size:13px">${escHtml(t.label)}</div>
+            <div style="font-size:12px;color:var(--slate)">${fmtDate(t.test_date)}</div>
+          </div>
+          ${t.pdf_url ? `<a href="${t.pdf_url}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none"> View</a>` : ''}
+        </div>`).join('')
+      : '<div style="color:var(--slate)">No water tests on file</div>';
+
+ // Service history
+    const histEl = document.getElementById('profile-history');
+    histEl.innerHTML = (history || []).length
+      ? history.map(h => `<div style="padding:8px 0;border-bottom:1px solid var(--mist);font-size:13px">
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-weight:600">${escHtml(h.type_name || h.service_type || '-')}</span>
+            <span style="color:var(--slate)">${fmtDate(h.service_date)}</span>
+          </div>
+          ${h.notes ? `<div style="color:var(--slate);font-size:12px;margin-top:3px">${escHtml(h.notes)}</div>` : ''}
+        </div>`).join('')
+      : '<div style="color:var(--slate)">No service history</div>';
+
+    document.getElementById('profile-loading').style.display = 'none';
+    document.getElementById('profile-content').style.display = 'block';
+
+  } catch(e) {
+    toast('Could not load profile: ' + e.message, 'error');
+    goBack();
+  }
+}
+
+async function loadEquipment(customerId) {
+  const el = document.getElementById('equip-section');
+  try {
+    const c = await api('GET', `/tech/customers/${customerId}`);
+    const equip = c.equipment || [];
+    if (!equip.length) { el.innerHTML = '<div style="color:var(--slate)">No equipment on file</div>'; return; }
+    el.innerHTML = equip.map(e => {
+      const days   = e.days_until_due;
+      const status = days === null ? 'badge-gray' : days < 0 ? 'badge-err' : days < 30 ? 'badge-warn' : 'badge-ok';
+      const due    = days === null ? 'No date' : days < 0 ? `Overdue ${Math.abs(days)}d` : `Due in ${days}d`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--mist)">
+        <div>
+          <div style="font-weight:600;font-size:13px">${escHtml(e.type_name)}${e.model ? ' - ' + escHtml(e.model) : ''}</div>
+          ${e.last_service_date ? `<div style="font-size:12px;color:var(--slate)">Last: ${fmtDate(e.last_service_date)}</div>` : ''}
+        </div>
+        <span class="badge ${status}">${due}</span>
+      </div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = '<div style="color:var(--warn)">Could not load equipment</div>'; }
+}
+
+async function loadNotes(customerId, appointmentId) {
+  const el = document.getElementById('notes-list');
+  try {
+    const notes = await api('GET', `/tech/customers/${customerId}/notes`);
+ // Show notes for this appointment, then fall back to recent customer notes
+    const apptNotes = (notes || []).filter(n => n.appointment_id == appointmentId);
+    const display   = apptNotes.length ? apptNotes : (notes || []).slice(0, 5);
+    if (!display.length) { el.innerHTML = '<div style="color:var(--slate);font-size:13px">No notes yet</div>'; return; }
+    el.innerHTML = display.map(n => `
+      <div style="padding:8px 0;border-bottom:1px solid var(--mist)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <span style="font-size:11px;color:var(--slate)">${escHtml(n.author_display||n.author_name||'-')} · ${(n.created_at||'').substring(0,10)}</span>
+          ${n.is_visible_to_customer ? '<span class="badge badge-ok" style="font-size:10px">Visible to customer</span>' : ''}
+        </div>
+        <div style="margin-top:4px;font-size:13px">${escHtml(n.note_text)}</div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML = '<div style="color:var(--warn)">Could not load notes</div>'; }
+}
+
+async function submitNote() {
+  const text    = document.getElementById('new-note-text').value.trim();
+  const visible = document.getElementById('note-visible').checked;
+  if (!text) return toast('Please enter a note', 'error');
+  if (!currentCustomerId) return toast('No customer selected', 'error');
+  try {
+    await api('POST', `/tech/customers/${currentCustomerId}/notes`, {
+      note_text:              text,
+      appointment_id:         currentAppointmentId || null,
+      is_visible_to_customer: visible ? 1 : 0,
+    });
+    document.getElementById('new-note-text').value = '';
+    document.getElementById('note-visible').checked = false;
+    toast('Note added');
+    await loadNotes(currentCustomerId, currentAppointmentId);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function loadServiceHistory(customerId) {
+  const el = document.getElementById('service-history');
+  try {
+    const records = await api('GET', `/tech/customers/${customerId}/service-history`);
+    if (!records || !records.length) { el.innerHTML = '<div style="color:var(--slate);font-size:13px">No service history</div>'; return; }
+    el.innerHTML = records.map(r => `
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--mist);gap:8px">
+        <div>
+          <div style="font-size:13px;font-weight:600">${escHtml(r.type_name||'-')}</div>
+          <div style="font-size:12px;color:var(--slate)">${escHtml(r.service_type||r.service_type_name||'')}${r.technician_name?' · '+escHtml(r.technician_name):''}</div>
+          ${r.notes?`<div style="font-size:12px;margin-top:2px">${escHtml(r.notes)}</div>`:''}
+        </div>
+        <div style="font-size:12px;color:var(--slate);white-space:nowrap">${fmtDate(r.date||r.service_date)}</div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML = '<div style="color:var(--warn)">Could not load history</div>'; }
+}
+
+function openComplete() {
+ // Populate service type dropdown
+  const sel = document.getElementById('complete-service-type');
+  sel.innerHTML = serviceTypes.map(t => `<option value="${t.type_id}">${escHtml(t.name)}</option>`).join('');
+  openModal('modal-complete');
+}
+
+async function submitComplete() {
+  const date        = document.getElementById('complete-date').value;
+  const serviceType = document.getElementById('complete-service-type').value;
+  const notes       = document.getElementById('complete-notes').value.trim();
+  const nextDue     = document.getElementById('complete-next-due').value;
+  if (!date) return toast('Please enter a completion date', 'error');
+  try {
+    await api('PUT', `/tech/appointments/${currentAppointmentId}`, {
+      status: 'completed',
+      completed_date: date,
+      tech_notes: notes || null,
+    });
+    closeModal('modal-complete');
+    toast('Job marked complete ');
+    openCustomer(currentAppointmentId);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function sendOnMyWay(appointmentId) {
+  try {
+    await api('POST', `/tech/appointments/${appointmentId}/on-my-way`);
+    toast('Customer notified ');
+  } catch(e) { toast(e.message || 'Could not send notification', 'error'); }
+}
+
+async function openInvoice() {
+  showPage('invoice');
+  document.getElementById('inv-title').textContent = 'Loading…';
+  try {
+ // appointmentDetail already includes the linked invoice - use it directly.
+ // (There is no GET /tech/appointments/{id}/invoice sub-resource on the backend.)
+    if (!currentAppointmentId) throw new Error('No appointment loaded');
+    const appt = await api('GET', `/tech/appointments/${currentAppointmentId}`);
+    if (appt && appt.customer_id) currentCustomerId = appt.customer_id;
+    const linked = appt && appt.invoice;
+    if (linked && linked.invoice_id) {
+      currentInvoiceId = linked.invoice_id;
+    } else {
+ // No invoice yet - create one. Backend requires customer_id.
+      if (!currentCustomerId) {
+        throw new Error('Cannot create invoice: customer not loaded (try reopening the appointment)');
+      }
+      const created = await api('POST', '/tech/invoices', {
+        appointment_id: currentAppointmentId,
+        customer_id:    currentCustomerId,
+        auto_populate:  true,
+      });
+      currentInvoiceId = created.invoice_id;
+    }
+    await renderInvoice();
+  } catch(e) { toast(e.message, 'error'); showPage('customer'); }
+}
+
+async function renderInvoice() {
+  try {
+    const inv = await api('GET', `/tech/invoices/${currentInvoiceId}`);
+    const statusClass = { draft:'badge-gray', sent:'badge-blue', paid:'badge-ok', void:'badge-err' }[inv.status] || 'badge-gray';
+
+    document.getElementById('inv-title').textContent        = 'Invoice #' + (inv.invoice_number || inv.invoice_id);
+    document.getElementById('inv-number').textContent       = inv.invoice_number || ('INV-' + inv.invoice_id);
+    document.getElementById('inv-customer-name').textContent = inv.customer_name || '';
+    document.getElementById('inv-status-badge').className   = `badge ${statusClass}`;
+    document.getElementById('inv-status-badge').textContent = inv.status;
+
+ // Lines
+    const lines = inv.lines || [];
+    document.getElementById('inv-lines-section').innerHTML = lines.length
+      ? `<table style="width:100%;margin-bottom:12px">
+          <thead><tr><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th></th></tr></thead>
+          <tbody>${lines.map(l => `<tr>
+            <td>${escHtml(l.line_name || l.description || '(unnamed)')}${l.description && l.line_name ? `<div style="font-size:11px;color:var(--slate)">${escHtml(l.description)}</div>` : ''}</td>
+            <td style="text-align:right">${l.quantity}</td>
+            <td style="text-align:right">${fmt$(l.unit_price)}</td>
+            <td style="text-align:right;font-weight:600">${fmt$(l.line_total)}</td>
+            <td style="text-align:right"><button class="btn btn-warn btn-sm" onclick="deleteLine(${l.line_id})"></button></td>
+          </tr>`).join('')}</tbody>
+        </table>`
+      : '<div style="color:var(--slate);font-size:13px;padding:8px 0">No line items yet</div>';
+
+ // Totals
+    document.getElementById('inv-totals').innerHTML = `
+      <div class="inv-total-row"><span>Subtotal</span><span>${fmt$(inv.subtotal)}</span></div>
+      <div class="inv-total-row"><span>Tax (${inv.tax_rate || 0}%)</span><span>${fmt$(inv.tax_amount)}</span></div>
+      <div class="inv-total-row grand"><span>Total</span><span>${fmt$(inv.total)}</span></div>
+      ${inv.amount_paid > 0 ? `<div class="inv-total-row" style="color:var(--ok)"><span>Paid</span><span>-${fmt$(inv.amount_paid)}</span></div>` : ''}
+      ${inv.balance_due > 0 ? `<div class="inv-total-row" style="font-weight:700;color:var(--warn)"><span>Balance Due</span><span>${fmt$(inv.balance_due)}</span></div>` : ''}`;
+
+ // Payments
+    const pays = inv.payments || [];
+    document.getElementById('inv-payments').innerHTML = pays.length
+      ? pays.map(p => `<div class="pay-row">
+          <div><div style="font-size:13px">${p.payment_date} · ${escHtml(p.payment_method)}</div>${p.payment_notes?`<div style="font-size:12px;color:var(--slate)">${escHtml(p.payment_notes)}</div>`:''}</div>
+          <div class="pay-amount">${fmt$(p.amount)}</div>
+        </div>`).join('')
+      : '<div style="color:var(--slate);font-size:13px">No payments recorded</div>';
+
+ // Actions
+    const actions = [];
+    if (inv.status !== 'void') {
+      actions.push(`<a href="${API_URL}/tech/invoices/${currentInvoiceId}/pdf?token=${encodeURIComponent(accessToken)}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none"> PDF</a>`);
+      if (inv.status !== 'paid') actions.push(`<button class="btn btn-blue btn-sm" onclick="sendInvoice()"> Send</button>`);
+      actions.push(`<button class="btn btn-teal btn-sm" onclick="openPayment()"> Payment</button>`);
+    }
+    document.getElementById('inv-actions').innerHTML = actions.join('');
+
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteLine(lineId) {
+  if (!confirm('Remove this line item?')) return;
+  try {
+    await api('DELETE', `/tech/invoices/${currentInvoiceId}/lines/${lineId}`);
+    toast('Line removed');
+    renderInvoice();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function sendInvoice() {
+  try {
+    await api('POST', `/tech/invoices/${currentInvoiceId}/send-email`);
+    toast('Invoice sent ');
+    renderInvoice();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function openAddLine() {
+  switchTab('service');
+  populateServiceDropdown();
+  loadEquipmentForLine();
+  openModal('modal-add-line');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  ['service','parts','equipment','custom'].forEach(t => {
+    document.getElementById(`tab-content-${t}`).style.display = t === tab ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).className = `btn btn-sm ${t === tab ? 'btn-teal' : 'btn-ghost'}`;
+  });
+}
+
+function populateServiceDropdown() {
+  const sel = document.getElementById('line-service-type');
+  sel.innerHTML = serviceTypes.map(t =>
+    `<option value="${t.type_id}" data-price="${t.default_price||0}">${escHtml(t.name)}</option>`).join('');
+  sel.onchange = () => {
+    const opt = sel.options[sel.selectedIndex];
+    document.getElementById('line-service-price').value = opt.dataset.price || '';
+  };
+  sel.dispatchEvent(new Event('change'));
+}
+
+async function loadEquipmentForLine() {
+  if (!currentCustomerId) return;
+  const el = document.getElementById('equip-line-list');
+  try {
+    const c = await api('GET', `/tech/customers/${currentCustomerId}`);
+    const equip = c.equipment || [];
+    if (!equip.length) { el.innerHTML = '<div style="color:var(--slate);font-size:13px">No equipment on account</div>'; return; }
+    el.innerHTML = equip.map(e =>
+      `<div class="cat-item" onclick="selectEquip(${e.equipment_id},'${escHtml(e.type_name+(e.model?' - '+e.model:''))}',${e.default_price||0})">${escHtml(e.type_name)}${e.model?' - '+escHtml(e.model):''}</div>`
+    ).join('');
+  } catch(e) {}
+}
+
+function selectEquip(id, name, price) {
+  selectedEquipId = id;
+  document.getElementById('selected-equip-name').textContent = name;
+  document.getElementById('line-equip-price').value = price || '';
+  document.getElementById('selected-equip-row').style.display = 'block';
+}
+
+async function submitLine() {
+  let body = null;
+  if (currentTab === 'service') {
+    const sel = document.getElementById('line-service-type');
+    body = {
+      description:  sel.options[sel.selectedIndex]?.text || 'Service',
+      unit_price:   parseFloat(document.getElementById('line-service-price').value) || 0,
+      quantity:     parseInt(document.getElementById('line-service-qty').value) || 1,
+      taxable:      document.getElementById('line-service-taxable').checked ? 1 : 0,
+      service_type_id: sel.value,
+    };
+  } else if (currentTab === 'parts') {
+    if (!selectedPartId) return toast('Select a part first', 'error');
+    body = {
+      catalog_item_id: selectedPartId,
+      unit_price:      parseFloat(document.getElementById('line-part-price').value) || 0,
+      quantity:        parseInt(document.getElementById('line-part-qty').value) || 1,
+    };
+  } else if (currentTab === 'equipment') {
+    if (!selectedEquipId) return toast('Select equipment first', 'error');
+    body = {
+      equipment_id: selectedEquipId,
+      unit_price:   parseFloat(document.getElementById('line-equip-price').value) || 0,
+      quantity:     parseInt(document.getElementById('line-equip-qty').value) || 1,
+      taxable:      document.getElementById('line-equip-taxable').checked ? 1 : 0,
+    };
+  } else if (currentTab === 'custom') {
+    const desc = document.getElementById('line-custom-desc').value.trim();
+    if (!desc) return toast('Enter a description', 'error');
+    body = {
+      description: desc,
+      unit_price:  parseFloat(document.getElementById('line-custom-price').value) || 0,
+      quantity:    parseInt(document.getElementById('line-custom-qty').value) || 1,
+      taxable:     document.getElementById('line-custom-taxable').checked ? 1 : 0,
+    };
+  }
+  if (!body) return;
+  try {
+    await api('POST', `/tech/invoices/${currentInvoiceId}/lines`, body);
+    closeModal('modal-add-line');
+    toast('Line item added');
+    renderInvoice();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function preloadCatalog() {
+  try { catalog = await api('GET', '/tech/catalog') || []; buildCategoryTree(); } catch(e) {}
+}
+
+function buildCategoryTree() {
+  const el = document.getElementById('cat-tree');
+  const cats = [...new Set(catalog.map(c => c.category).filter(Boolean))].sort();
+  el.innerHTML = cats.map(cat =>
+    `<div class="cat-item" onclick="filterByCategory('${escHtml(cat)}')">${escHtml(cat)}</div>`
+  ).join('') + `<div class="cat-item" onclick="showAllParts()">All Parts</div>`;
+}
+
+function filterByCategory(cat) {
+  const items = catalog.filter(c => c.category === cat);
+  renderPartList(items);
+}
+
+function showAllParts() { renderPartList(catalog); }
+
+function searchParts() {
+  const q = document.getElementById('parts-search').value.toLowerCase();
+  renderPartList(q ? catalog.filter(c => (c.name||'').toLowerCase().includes(q) || (c.category||'').toLowerCase().includes(q)) : catalog);
+}
+
+function clearPartsSearch() {
+  document.getElementById('parts-search').value = '';
+  renderPartList(catalog);
+}
+
+function renderPartList(items) {
+  const el = document.getElementById('parts-results');
+  el.innerHTML = items.slice(0,80).map(p =>
+    `<div class="cat-item" onclick="selectPart(${p.item_id},'${escHtml(p.name)}',${p.price||0})">${escHtml(p.name)} <span style="color:var(--air)">${fmt$(p.price)}</span></div>`
+  ).join('');
+}
+
+function selectPart(id, name, price) {
+  selectedPartId = id;
+  document.getElementById('selected-part-name').textContent = name;
+  document.getElementById('line-part-price').value = price || '';
+  document.getElementById('selected-part-row').style.display = 'block';
+}
+
+function openPayment() {
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-notes').value  = '';
+  document.getElementById('pay-check').value  = '';
+  document.getElementById('pay-date').value   = new Date().toISOString().split('T')[0];
+  techPaymentMethodChanged();
+  openModal('modal-payment');
+}
+
+function techPaymentMethodChanged() {
+  const method = document.getElementById('pay-method').value;
+  const row    = document.getElementById('pay-check-row');
+  if (method === 'check') {
+    row.style.display = '';
+  } else {
+    row.style.display = 'none';
+    document.getElementById('pay-check').value = '';
+  }
+}
+
+async function submitPayment() {
+  const amount      = parseFloat(document.getElementById('pay-amount').value);
+  const method      = document.getElementById('pay-method').value;
+  const date        = document.getElementById('pay-date').value;
+  const notes       = document.getElementById('pay-notes').value.trim();
+  const checkNumber = document.getElementById('pay-check').value.trim();
+  if (!amount || amount <= 0) return toast('Enter a valid amount', 'error');
+  if (method === 'check' && checkNumber.length > 20) {
+    return toast('Check # must be 20 characters or fewer', 'error');
+  }
+  try {
+    await api('POST', `/tech/invoices/${currentInvoiceId}/payments`, {
+      amount,
+      payment_method: method,
+      payment_date:   date,
+      payment_notes:  notes || null,
+      check_number:   method === 'check' && checkNumber ? checkNumber : null,
+    });
+    closeModal('modal-payment');
+    toast('Payment recorded ');
+    renderInvoice();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function openWaterTest() {
+  document.getElementById('wt-label').value = '';
+  document.getElementById('wt-date').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('wt-file').value  = '';
+  openModal('modal-water-test');
+}
+
+async function submitWaterTest() {
+  const label = document.getElementById('wt-label').value.trim();
+  const date  = document.getElementById('wt-date').value;
+  const file  = document.getElementById('wt-file').files[0];
+  if (!label) return toast('Enter a label', 'error');
+  if (!file)  return toast('Select a PDF file', 'error');
+  const fd = new FormData();
+  fd.append('pdf', file);
+  fd.append('customer_id', currentCustomerId);
+  fd.append('label', label);
+  fd.append('test_date', date);
+  try {
+    const r = await fetch(API_URL.replace('/public','') + '/public/upload_water_test.php', {
+      method:'POST', headers:{'Authorization':'Bearer '+accessToken}, body:fd,
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    closeModal('modal-water-test');
+    toast('Water test uploaded ');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function generateApptReport() {
+  if (!currentAppointmentId) return toast('No appointment selected', 'error');
+  const url = `${API_URL}/tech/appointments/${currentAppointmentId}/report-pdf`;
+  toast('Generating report…');
+  fetch(url, { headers:{'Authorization':'Bearer '+accessToken} })
+    .then(async r => {
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('pdf')) {
+        const txt = await r.text();
+        throw new Error(txt.substring(0,120));
+      }
+      return r.blob();
+    })
+    .then(blob => {
+      const pdfBlob = new Blob([blob], { type:'application/pdf' });
+      window.open(URL.createObjectURL(pdfBlob), '_blank');
+    })
+    .catch(e => toast(e.message, 'error'));
+}
+
+function openCreateAppointment() {
+  document.getElementById('ca-search').value = '';
+  document.getElementById('ca-customer-id').value = '';
+  document.getElementById('ca-selected').style.display = 'none';
+  document.getElementById('ca-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('ca-time').value = '';
+  document.getElementById('ca-notes').value = '';
+  const sel = document.getElementById('ca-service-type');
+  sel.innerHTML = serviceTypes.map(t => `<option value="${t.type_id}">${escHtml(t.name)}</option>`).join('');
+  openModal('modal-create-appt');
+}
+
+let _caSearchTimeout = null;
+function searchApptCustomer() {
+  const q = document.getElementById('ca-search').value.trim();
+  const res = document.getElementById('ca-results');
+  clearTimeout(_caSearchTimeout);
+  if (q.length < 2) { res.style.display = 'none'; return; }
+  _caSearchTimeout = setTimeout(async () => {
+    try {
+      const customers = await api('GET', `/tech/customers?q=${encodeURIComponent(q)}`);
+      if (!customers || !customers.length) { res.style.display = 'none'; return; }
+      res.innerHTML = customers.slice(0,8).map(c =>
+        `<div onclick="selectApptCustomer(${c.customer_id},'${escHtml(c.first_name+' '+c.last_name)}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--mist);font-size:13px;color:var(--ink)" onmouseover="this.style.background='var(--mist)'" onmouseout="this.style.background=''">${escHtml(c.first_name+' '+c.last_name)}<span style="color:var(--slate);margin-left:8px">${escHtml(c.phone||'')}</span></div>`
+      ).join('');
+      res.style.display = 'block';
+    } catch(e) {}
+  }, 300);
+}
+
+function selectApptCustomer(id, name) {
+  document.getElementById('ca-customer-id').value = id;
+  document.getElementById('ca-selected-name').textContent = name;
+  document.getElementById('ca-selected').style.display = 'flex';
+  document.getElementById('ca-results').style.display = 'none';
+  document.getElementById('ca-search').value = name;
+}
+
+function clearApptCustomer() {
+  document.getElementById('ca-customer-id').value = '';
+  document.getElementById('ca-selected').style.display = 'none';
+  document.getElementById('ca-search').value = '';
+}
+
+async function submitCreateAppt() {
+  const customerId    = document.getElementById('ca-customer-id').value;
+  const serviceTypeId = document.getElementById('ca-service-type').value;
+  const date          = document.getElementById('ca-date').value;
+  const time          = document.getElementById('ca-time').value;
+  const notes         = document.getElementById('ca-notes').value.trim();
+  const source        = document.getElementById('ca-source').value;
+  if (!customerId)    return toast('Select a customer', 'error');
+  if (!serviceTypeId) return toast('Select a service type', 'error');
+  if (!date)          return toast('Enter a date', 'error');
+  try {
+    const r = await api('POST', '/tech/appointments', {
+      customer_id:     parseInt(customerId),
+      service_type_id: parseInt(serviceTypeId),
+      confirmed_date:  date,
+      confirmed_time:  time || null,
+      office_notes:    notes || null,
+      booking_source:  source,
+      status:          'confirmed',
+    });
+    closeModal('modal-create-appt');
+    toast('Appointment created ');
+    openCustomer(r.appointment_id);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function loadServiceTypes() {
+  try { serviceTypes = await api('GET', '/tech/service-types') || []; } catch(e) {}
+}
+
+async function loadTechnicians() {
+  try { technicians = await api('GET', '/tech/technicians') || []; } catch(e) {}
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+
+<!-- Leaflet map library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+// DASHBOARD MAP - Service location pins, scoped to this tech
+
+let _dashMap        = null;
+let _mapView        = 'today'; // 'today' | 'week'
+let _mapApptData    = {};
+let _mapDueData     = [];
+let _mapMarkerGroup = null;
+let _mapDueGroup    = null;
+let _mapVisible     = true;
+let _geocodeCache   = {};
+let _geocodePending = 0;
+
+const MAP_CENTER = [40.55, -89.55]; // Peoria, Central Illinois
+const MAP_ZOOM   = 10;
+
+function initDashMap() {
+  if (_dashMap) return;
+  _dashMap = L.map('dash-map', { center: MAP_CENTER, zoom: MAP_ZOOM, zoomControl: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(_dashMap);
+  _mapMarkerGroup = L.layerGroup().addTo(_dashMap);
+  _mapDueGroup    = L.layerGroup().addTo(_dashMap);
+}
+
+function setMapView(view) {
+  _mapView = view;
+  document.getElementById('map-btn-today')?.classList.toggle('active', view === 'today');
+  document.getElementById('map-btn-week')?.classList.toggle('active',  view === 'week');
+  refreshMapPins();
+}
+
+function toggleMapSection() {
+  _mapVisible = !_mapVisible;
+  const section = document.getElementById('dash-map-section');
+  const label   = document.getElementById('dash-map-toggle-label');
+  section.style.display = _mapVisible ? '' : 'none';
+  if (label) label.textContent = _mapVisible ? 'Hide' : 'Show';
+  if (_mapVisible && _dashMap) setTimeout(() => _dashMap.invalidateSize(), 50);
+}
+
+// Called by loadDashboard after data arrives
+function updateMapData(todayJobs, allWeekAppts, due30, due7) {
+  const due60 = (due30 || []).concat((due7 || []).filter(r => !due30?.find(d => d.equipment_id === r.equipment_id)));
+  _mapDueData  = due60;
+  _mapApptData = { today: todayJobs || [], week: allWeekAppts || [] };
+
+  if (!_dashMap) initDashMap();
+  else setTimeout(() => _dashMap.invalidateSize(), 50);
+
+  refreshMapPins();
+}
+
+async function geocodeAddress(address) {
+  if (_geocodeCache[address]) return _geocodeCache[address];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address + ', Illinois, USA')}`;
+    const res  = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
+    if (data && data[0]) {
+      const latlng = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+      _geocodeCache[address] = latlng;
+      return latlng;
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function refreshMapPins() {
+  if (!_dashMap) { initDashMap(); }
+  if (!_mapMarkerGroup) return;
+
+  _mapMarkerGroup.clearLayers();
+  _mapDueGroup.clearLayers();
+
+  const appts  = (_mapApptData[_mapView] || []).filter(a => !['cancelled','completed'].includes(a.status));
+  const showDue = document.getElementById('map-show-due')?.checked;
+
+  const statusColors = { confirmed:'#2a8fff', in_progress:'#f59e0b' };
+
+  const countEl  = document.getElementById('dash-map-appt-count');
+  const statusEl = document.getElementById('dash-map-status');
+  if (countEl) countEl.textContent = `- ${appts.length} appointment${appts.length!==1?'s':''}`;
+  if (statusEl) statusEl.textContent = 'Geocoding addresses…';
+
+  _geocodePending = 0;
+  let placed = 0;
+
+  for (const a of appts) {
+    const addrParts = [a.service_address, a.service_city, a.service_state].filter(Boolean);
+    if (!addrParts.length) continue;
+    const addrStr = addrParts.join(', ');
+    _geocodePending++;
+
+    geocodeAddress(addrStr).then(latlng => {
+      _geocodePending--;
+      if (!latlng) return;
+      placed++;
+
+      const color = statusColors[a.status] || '#8b9cb0';
+      const icon  = L.divIcon({
+        className: '',
+        html: `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);">
+          <div style="transform:rotate(45deg);width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px"></div>
+        </div>`,
+        iconSize: [28,28], iconAnchor: [14,28], popupAnchor: [0,-30],
+      });
+
+      const timeStr = a.confirmed_time ? a.confirmed_time.substr(0,5) + ' · ' : '';
+      const popup = `<div style="font-family:'DM Sans',sans-serif;min-width:160px">
+        ${nameLines(a, 'font-weight:700;font-size:13px;margin-bottom:3px')}
+        <div style="font-size:11px;color:#555">${timeStr}${escHtml(a.service_type||'')}</div>
+        <div style="font-size:11px;color:#777;margin-top:2px">${escHtml(addrStr)}</div>
+        <div style="margin-top:6px">
+          <span style="background:${color};color:#fff;border-radius:8px;padding:1px 8px;font-size:10px">${a.status.replace('_',' ')}</span>
+        </div>
+      </div>`;
+
+      L.marker(latlng, { icon }).addTo(_mapMarkerGroup).bindPopup(popup);
+
+      if (_geocodePending === 0 && statusEl) {
+        statusEl.textContent = placed ? '' : 'No mappable addresses found';
+        setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+      }
+    });
+
+    await new Promise(r => setTimeout(r, 200));
+  }
+
+  if (showDue) {
+    const dueByAddr = {};
+    for (const r of _mapDueData) {
+      const addrParts = [r.service_address, r.service_city, r.service_state].filter(Boolean);
+      if (!addrParts.length) continue;
+      const key = addrParts.join(', ');
+      if (!dueByAddr[key]) dueByAddr[key] = { addr: key, items: [], customer_name: r.customer_name, company_name: r.company_name };
+      dueByAddr[key].items.push(r);
+    }
+
+    for (const [addr, info] of Object.entries(dueByAddr)) {
+      await new Promise(r => setTimeout(r, 200));
+      geocodeAddress(addr).then(latlng => {
+        if (!latlng) return;
+        const hasOverdue = info.items.some(r => parseInt(r.days_until_due) < 0);
+        const color = hasOverdue ? '#ef4444' : '#f59e0b';
+        const icon  = L.divIcon({
+          className: '',
+          html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;font-size:10px">${hasOverdue?'':'⏰'}</div>`,
+          iconSize: [22,22], iconAnchor: [11,11], popupAnchor: [0,-14],
+        });
+
+        const itemsHtml = info.items.slice(0,4).map(r => {
+          const d = parseInt(r.days_until_due);
+          const dStr = d < 0 ? `<span style="color:#ef4444">${Math.abs(d)}d overdue</span>` : `<span style="color:#f59e0b">${d}d</span>`;
+          return `<div style="font-size:11px;padding:2px 0;border-bottom:1px solid #eee">${escHtml(r.type_name||'')} · ${dStr}</div>`;
+        }).join('');
+
+        const popup = `<div style="font-family:'DM Sans',sans-serif;min-width:160px">
+          ${nameLines(info, 'font-weight:700;font-size:13px;margin-bottom:4px')}
+          <div style="font-size:11px;color:#777;margin-bottom:6px">${escHtml(addr)}</div>
+          ${itemsHtml}
+          <div style="margin-top:8px"><span style="background:${color};color:#fff;border-radius:8px;padding:1px 8px;font-size:10px">${hasOverdue?'Overdue':'Due Soon'}</span></div>
+        </div>`;
+
+        L.marker(latlng, { icon }).addTo(_mapDueGroup).bindPopup(popup);
+      });
+    }
+  }
+
+  if (!appts.length && statusEl) {
+    statusEl.textContent = _mapView === 'today' ? 'No appointments today' : 'No open appointments this week';
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+  }
+}
+</script>
+
+<div style="text-align:center;padding:10px 0 14px;font-family:'Prisma','DM Serif Display',serif;font-size:11px;color:var(--slate);opacity:0.45;letter-spacing:0.04em;user-select:none" id="app-version-footer"></div>
+<script>document.getElementById('app-version-footer').textContent = 'MVP Backoffice ' + MVP_VERSION;</script>
+
+</body>
+</html>
