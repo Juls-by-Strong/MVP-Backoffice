@@ -393,6 +393,15 @@ function _hkdf(string $salt, string $ikm, string $info, int $length): string {
     return substr(hash_hmac('sha256', $info . "\x01", $prk, true), 0, $length);
 }
 
+// Insert a pending notification for the customer's next poll to pick up
+function sendPendingNotification(PDO $db, int $customerId, string $title, string $body): int {
+    $db->prepare(
+        "INSERT INTO pending_notifications (customer_id, title, body, created_at)
+         VALUES (?, ?, ?, NOW())"
+    )->execute([$customerId, $title, $body]);
+    return (int)$db->lastInsertId();
+}
+
 // Log push attempts
 function _logPush(PDO $db, int $customerId, string $eventType, string $title, string $body,
                   int $success, int $failures, array $contextIds): void {

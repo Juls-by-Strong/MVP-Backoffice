@@ -1069,8 +1069,46 @@ function routeAdmin(string $method, string $resource, ?string $id, ?string $sub 
             ]);
             return;
 
- // IMAGES
- // DELETE /admin/images/{id} - delete a customer image
+  // PUSH - send test notification to a customer
+  // POST /admin/push/send { customer_id, title, body }
+        case 'push':
+            if ($method !== 'POST' || $id !== 'send') {
+                sendError(405, 'Method not allowed');
+            }
+
+            $body = json_decode(file_get_contents('php://input'), true) ?? [];
+            $customerId = (int)($body['customer_id'] ?? 0);
+            $title      = trim($body['title'] ?? '');
+            $bodyText   = trim($body['body'] ?? '');
+
+            if (!$customerId || !$title || !$bodyText) {
+                sendError(400, 'customer_id, title, and body are required');
+            }
+
+            $stmt = $db->prepare("SELECT customer_id FROM customers WHERE customer_id = ?");
+            $stmt->execute([$customerId]);
+            if (!$stmt->fetch()) {
+                sendError(404, 'Customer not found');
+            }
+
+            require_once __DIR__ . '/push.php';
+            $notificationId = sendPendingNotification($db, $customerId, $title, $bodyText);
+
+  // Also attempt a live web push if the customer has subscriptions
+            $pushResult = sendPushToCustomer($db, $customerId, $title, $bodyText, '/', 'admin_test');
+
+            sendJson([
+                'message'             => 'Test notification sent',
+                'pending_id'          => $notificationId,
+                'push_attempted'      => $pushResult['attempted'],
+                'push_success'        => $pushResult['success'],
+                'push_failures'       => $pushResult['failures'],
+                'push_subscriptions_pruned' => $pushResult['pruned'],
+            ], 201);
+            break;
+
+  // IMAGES
+  // DELETE /admin/images/{id} - delete a customer image
         case 'images':
             if ($method !== 'DELETE') sendError(405, 'Method not allowed');
             if (!$id) sendError(400, 'image_id required');

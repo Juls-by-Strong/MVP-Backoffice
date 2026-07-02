@@ -30,6 +30,8 @@ function getNotesForCustomer(PDO $db, int $customerId, string $viewerRole): arra
             et.type_name     AS equipment_name,
             n.note_text,
             n.is_visible_to_customer,
+            n.is_pinned,
+            n.pinned_at,
             n.created_at,
             n.updated_at,
             -- Customers see role label, staff see full name or email
@@ -54,7 +56,7 @@ function getNotesForCustomer(PDO $db, int $customerId, string $viewerRole): arra
          LEFT JOIN equipment_types et ON e.type_id = et.type_id
          WHERE n.customer_id = ?
          $visibilityClause
-         ORDER BY n.created_at DESC"
+         ORDER BY n.is_pinned DESC, COALESCE(n.pinned_at, n.created_at) DESC, n.created_at DESC"
     );
     $stmt->execute([$viewerRole, $customerId]);
     return $stmt->fetchAll();
@@ -127,6 +129,13 @@ function handleAdminNotes(PDO $db, string $method, ?string $id, ?string $sub, in
                         : $body[$f];
                 }
             }
+            if (array_key_exists('is_pinned', $body)) {
+                $pinned = (int)(bool)$body['is_pinned'];
+                $fields[] = 'is_pinned = ?';
+                $values[] = $pinned;
+                $fields[] = 'pinned_at = ?';
+                $values[] = $pinned ? date('Y-m-d H:i:s') : null;
+            }
             if (empty($fields)) sendError(400, 'Nothing to update');
             $values[] = $noteId;
             $db->prepare("UPDATE customer_notes SET " . implode(', ', $fields) . " WHERE note_id = ?")
@@ -190,6 +199,8 @@ function handleTechNotes(PDO $db, string $method, ?string $id, ?string $sub, int
     }
 
  // /tech/notes/{id} - tech can edit their OWN notes only, cannot delete
+ // Pin/unpin is exempt from the ownership check so either role can surface
+ // important context regardless of who wrote the note.
     if ($id !== null && $sub === null) {
         $noteId = (int)$id;
         $stmt   = $db->prepare("SELECT * FROM customer_notes WHERE note_id = ?");
@@ -197,8 +208,10 @@ function handleTechNotes(PDO $db, string $method, ?string $id, ?string $sub, int
         $note   = $stmt->fetch();
         if (!$note) sendError(404, 'Note not found');
 
- // Verify ownership
-        if ((int)$note['author_id'] !== $techUserId) {
+ // Verify ownership unless the request is a pin-only toggle
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+        $pinOnly = array_key_exists('is_pinned', $body) && count($body) === 1;
+        if (!$pinOnly && (int)$note['author_id'] !== $techUserId) {
             sendError(403, 'You can only edit your own notes');
         }
 
@@ -215,6 +228,13 @@ function handleTechNotes(PDO $db, string $method, ?string $id, ?string $sub, int
                         ? (int)(bool)$body[$f]
                         : $body[$f];
                 }
+            }
+            if (array_key_exists('is_pinned', $body)) {
+                $pinned = (int)(bool)$body['is_pinned'];
+                $fields[] = 'is_pinned = ?';
+                $values[] = $pinned;
+                $fields[] = 'pinned_at = ?';
+                $values[] = $pinned ? date('Y-m-d H:i:s') : null;
             }
             if (empty($fields)) sendError(400, 'Nothing to update');
             $values[] = $noteId;

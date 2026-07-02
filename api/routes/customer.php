@@ -319,6 +319,73 @@ function routeCustomer(string $method, string $resource, ?string $id, ?string $s
             sendError(405, 'Method not allowed');
             break;
 
+        case 'poll':
+            if ($method !== 'GET') sendError(405, 'Method not allowed');
+
+            $stmt = $db->prepare(
+                "SELECT a.appointment_id, a.requested_date, a.confirmed_date, a.confirmed_time,
+                        a.status, a.service_type_id, st.name AS service_type
+                 FROM appointments a
+                 JOIN service_types st ON a.service_type_id = st.type_id
+                 WHERE a.customer_id = ? AND a.status IN ('pending','confirmed','in_progress')
+                 ORDER BY COALESCE(a.confirmed_date, a.requested_date) ASC"
+            );
+            $stmt->execute([$customerId]);
+            $appointments = $stmt->fetchAll();
+
+            $stmt = $db->prepare(
+                "SELECT COUNT(*) FROM invoices
+                 WHERE customer_id = ? AND status IN ('draft','sent')"
+            );
+            $stmt->execute([$customerId]);
+            $unpaidCount = (int)$stmt->fetchColumn();
+
+            $stmt = $db->prepare(
+                "SELECT e.equipment_id, et.type_name, et.category, e.model,
+                        e.last_service_date, e.next_service_due,
+                        DATEDIFF(e.next_service_due, CURDATE()) AS days_until_due
+                 FROM equipment e
+                 JOIN equipment_types et ON e.type_id = et.type_id
+                 WHERE e.customer_id = ? AND e.is_active = 1
+                 ORDER BY e.next_service_due ASC"
+            );
+            $stmt->execute([$customerId]);
+            $equipment = $stmt->fetchAll();
+
+            $stmt = $db->prepare(
+                "SELECT id, title, body, created_at
+                 FROM pending_notifications
+                 WHERE customer_id = ? AND read_at IS NULL
+                 ORDER BY created_at DESC"
+            );
+            $stmt->execute([$customerId]);
+            $notifications = $stmt->fetchAll();
+
+            sendJson([
+                'appointments'  => $appointments,
+                'unpaid_count'  => $unpaidCount,
+                'equipment'     => $equipment,
+                'notifications' => $notifications,
+            ]);
+            break;
+
+        case 'notifications':
+            if ($method === 'POST' && $sub === 'ack' && $id !== null) {
+                $stmt = $db->prepare(
+                    "UPDATE pending_notifications SET read_at = NOW()
+                     WHERE id = ? AND customer_id = ? AND read_at IS NULL"
+                );
+                $stmt->execute([$id, $customerId]);
+
+                if ($stmt->rowCount() === 0) {
+                    sendError(404, 'Notification not found or already acknowledged');
+                }
+
+                sendJson(['message' => 'Notification acknowledged']);
+            }
+            sendError(405, 'Method not allowed');
+            break;
+
         case 'push':
             require_once __DIR__ . '/push.php';
             handleCustomerPush($db, $method, $sub, $customerId);

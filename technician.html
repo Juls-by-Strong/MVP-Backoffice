@@ -1710,7 +1710,7 @@ html[data-theme="snep"][data-mode="light"] .map-due-label { color:rgba(10,30,70,
 'use strict';
 
 const API_URL = 'https://example.com/api/public';
-const MVP_VERSION = 'v260616e'; // single source - mirrors api/config/version.php
+const MVP_VERSION = 'v260630';
 const VERSION = MVP_VERSION;   // alias used elsewhere in this file
 
 let accessToken         = null;
@@ -2921,15 +2921,34 @@ async function loadNotes(customerId, appointmentId) {
     const apptNotes = (notes || []).filter(n => n.appointment_id == appointmentId);
     const display   = apptNotes.length ? apptNotes : (notes || []).slice(0, 5);
     if (!display.length) { el.innerHTML = '<div style="color:var(--slate);font-size:13px">No notes yet</div>'; return; }
-    el.innerHTML = display.map(n => `
-      <div style="padding:8px 0;border-bottom:1px solid var(--mist)">
+    el.innerHTML = display.map(n => {
+      const pinned = n.is_pinned == 1;
+      return `
+      <div style="padding:8px 0;border-bottom:1px solid var(--mist);${pinned ? 'border-left:3px solid var(--air);padding-left:10px;background:rgba(18,196,168,0.04)' : ''}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-          <span style="font-size:11px;color:var(--slate)">${escHtml(n.author_display||n.author_name||'-')} · ${(n.created_at||'').substring(0,10)}</span>
-          ${n.is_visible_to_customer ? '<span class="badge badge-ok" style="font-size:10px">Visible to customer</span>' : ''}
+          <span style="font-size:11px;color:var(--slate)">
+            ${pinned ? '<span style="margin-right:4px;font-size:10px;color:var(--air);font-weight:600">Pinned</span>' : ''}
+            ${escHtml(n.author_display||n.author_name||'-')} · ${(n.created_at||'').substring(0,10)}
+          </span>
+          <span style="display:flex;gap:6px;align-items:center">
+            ${n.is_visible_to_customer ? '<span class="badge badge-ok" style="font-size:10px">Visible to customer</span>' : ''}
+            <button class="btn btn-sm ${pinned ? 'btn-teal' : 'btn-ghost'}" style="font-size:10px;padding:3px 8px" onclick="toggleTechPinNote(${n.note_id},${pinned ? 0 : 1})" title="${pinned ? 'Unpin' : 'Pin to top'}">${pinned ? 'Unpin' : 'Pin'}</button>
+          </span>
         </div>
         <div style="margin-top:4px;font-size:13px">${escHtml(n.note_text)}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch(e) { el.innerHTML = '<div style="color:var(--warn)">Could not load notes</div>'; }
+}
+
+async function toggleTechPinNote(noteId, pin) {
+  try {
+    await api('PUT', `/tech/notes/${noteId}`, { is_pinned: pin });
+    toast(pin ? 'Note pinned to top' : 'Note unpinned', 'success');
+    if (typeof currentCustomerId !== 'undefined') {
+      await loadNotes(currentCustomerId, currentAppointmentId);
+    }
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 async function submitNote() {
