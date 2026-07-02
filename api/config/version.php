@@ -1,3 +1,3 @@
 <?php
 
-define('MVP_VERSION', 'v260630');
+define('MVP_VERSION', '260702.0915');
