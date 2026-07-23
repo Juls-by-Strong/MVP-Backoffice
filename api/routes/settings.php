@@ -12,6 +12,14 @@ if (!function_exists('updateSetting')) {
     }
 }
 
+if (!function_exists('getCompanySettingValue')) {
+    function getCompanySettingValue(PDO $db, string $key): string {
+        $stmt = $db->prepare("SELECT setting_value FROM company_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        return $stmt->fetchColumn() ?: '';
+    }
+}
+
 function getCompanySettings(PDO $db): array {
     $stmt = $db->query("SELECT setting_key, setting_value FROM company_settings");
     $rows = $stmt->fetchAll();

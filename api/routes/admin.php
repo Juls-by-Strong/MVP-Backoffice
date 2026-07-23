@@ -623,6 +623,18 @@ function routeAdmin(string $method, string $resource, ?string $id, ?string $sub 
             handleInvoices($db, $method, $id, $sub, $subsub, $adminUserId, 'admin');
             break;
 
+ // ESTIMATES
+        case 'estimates':
+            require_once __DIR__ . '/estimates.php';
+            handleEstimates($db, $method, $id, $sub, $subsub, $adminUserId, 'admin');
+            break;
+
+ // SERVICE CONTRACTS
+        case 'contracts':
+            require_once __DIR__ . '/contracts.php';
+            handleContracts($db, $method, $id, $sub, $subsub, $adminUserId, 'admin');
+            break;
+
  // TAX RATES
         case 'taxrates':
             handleTaxRates($db, $method, $id);

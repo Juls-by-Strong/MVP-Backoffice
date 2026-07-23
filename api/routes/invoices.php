@@ -36,13 +36,59 @@ function generateInvoiceNumber(PDO $db): string {
     return sprintf('INV-%d-%04d', $year, $seq);
 }
 
-function getTaxRate(PDO $db, string $city, string $state = 'IL'): float {
+function getTaxRate(PDO $db, string $city, string $state = 'IL', ?string $zip = null): float {
+    // If API key is configured, try ZIP-based lookup first (more accurate)
+    $apiKey = getCompanySettingValue($db, 'tax_rate_api_key');
+    if ($apiKey && $zip) {
+        $cached = fetchTaxRateFromAPI($db, $apiKey, $zip, $state);
+        if ($cached !== null) return $cached;
+    }
+
+    // Fall back to manual city/state table
     $stmt = $db->prepare(
         "SELECT rate FROM tax_rates WHERE LOWER(city) = LOWER(?) AND state = ?"
     );
     $stmt->execute([trim($city), $state]);
     $row = $stmt->fetch();
-    return $row ? (float)$row['rate'] : 0.0625; // fallback to IL state rate
+    return $row ? (float)$row['rate'] : 0.0625;
+}
+
+function fetchTaxRateFromAPI(PDO $db, string $apiKey, string $zip, string $state): ?float {
+    // Check cache first (valid for 30 days)
+    $stmt = $db->prepare(
+        "SELECT rate FROM tax_rates WHERE LOWER(city) = LOWER(?) AND state = ?
+         AND updated_at > DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    );
+    $stmt->execute(["zip_$zip", $state]);
+    $row = $stmt->fetch();
+    if ($row) return (float)$row['rate'];
+
+    // Hit the API (SalesTax.io)
+    $url = "https://api.salestax.io/v1/rates?zip=" . urlencode($zip);
+    $ctx = stream_context_create([
+        'http' => [
+            'method'  => 'GET',
+            'header'  => "Authorization: Bearer $apiKey\r\n"
+                       . "Accept: application/json\r\n",
+            'timeout' => 5,
+            'ignore_errors' => true,
+        ]
+    ]);
+    $resp = @file_get_contents($url, false, $ctx);
+    if ($resp === false) return null;
+
+    $data = json_decode($resp, true);
+    $rate = $data['combined_rate'] ?? null;
+    if ($rate === null) return null;
+
+    // Cache it in tax_rates table using zip_{zip} as the city key
+    $db->prepare(
+        "INSERT INTO tax_rates (city, state, rate)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE rate = VALUES(rate), updated_at = NOW()"
+    )->execute(["zip_$zip", $state, (float)$rate]);
+
+    return (float)$rate;
 }
 
 function recalculateInvoice(PDO $db, int $invoiceId): void {
@@ -63,16 +109,16 @@ function recalculateInvoice(PDO $db, int $invoiceId): void {
         return;
     }
 
- // Get customer city for tax rate
+ // Get customer city/state/zip for tax rate
     $stmt2 = $db->prepare(
-        "SELECT c.service_city, c.service_state
+        "SELECT c.service_city, c.service_state, c.service_zip
          FROM invoices i JOIN customers c ON i.customer_id = c.customer_id
          WHERE i.invoice_id = ?"
     );
     $stmt2->execute([$invoiceId]);
     $customer = $stmt2->fetch();
 
-    $taxRate      = getTaxRate($db, $customer['service_city'] ?? '', $customer['service_state'] ?? 'IL');
+    $taxRate      = getTaxRate($db, $customer['service_city'] ?? '', $customer['service_state'] ?? 'IL', $customer['service_zip'] ?? null);
     $subtotal     = 0.00;
     $taxable      = 0.00;
 

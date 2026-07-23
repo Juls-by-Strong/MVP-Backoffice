@@ -24,6 +24,16 @@ function routeTech(string $method, string $resource, ?string $id, ?string $sub =
             handleInvoices($db, $method, $id, $sub, $subsub, $technicianId, 'technician');
             break;
 
+        case 'estimates':
+            require_once __DIR__ . '/estimates.php';
+            handleEstimates($db, $method, $id, $sub, $subsub, $technicianId, 'technician');
+            break;
+
+        case 'contracts':
+            require_once __DIR__ . '/contracts.php';
+            handleContracts($db, $method, $id, $sub, $subsub, $technicianId, 'technician');
+            break;
+
         case 'appointments':
  // POST /tech/appointments/{id}/on-my-way
             if ($sub === 'on-my-way' && $method === 'POST' && $id !== null) {

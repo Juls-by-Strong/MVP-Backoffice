@@ -168,7 +168,7 @@ function handleQbo(string $method, ?string $sub, ?string $subId): void {
             $body    = json_decode(file_get_contents('php://input'), true) ?? [];
             $qboIds  = $body['qbo_ids'] ?? null;   // null = import all new; array = import specific
             $qboList = fetchAllQboCustomers($db, $cfg);
- // Build set of already-mapped QBO IDs
+  // Build set of already-mapped QBO IDs
             $mapped  = [];
             $rows    = $db->query("SELECT qbo_customer_id FROM qbo_customers")->fetchAll();
             foreach ($rows as $r) $mapped[$r['qbo_customer_id']] = true;
@@ -178,19 +178,19 @@ function handleQbo(string $method, ?string $sub, ?string $subId): void {
             foreach ($qboList as $qc) {
                 $qid = $qc['Id'] ?? null;
                 if (!$qid) continue;
- // Skip already imported
+  // Skip already imported
                 if (isset($mapped[$qid])) { $skipped++; continue; }
- // If specific IDs requested, skip others
+  // If specific IDs requested, skip others
                 if ($qboIds !== null && !in_array($qid, $qboIds)) { $skipped++; continue; }
- // Skip inactive QBO customers
+  // Skip inactive QBO customers
                 $isActive = ($qc['Active'] ?? true);
                 if ($isActive === false || $isActive === 'false') { $skipped++; continue; }
                 $firstName = trim($qc['GivenName']  ?? '');
                 $lastName  = trim($qc['FamilyName'] ?? '');
                 $display   = trim($qc['DisplayName'] ?? '');
- // Fall back: split DisplayName if no given/family name
+  // Fall back: split DisplayName if no given/family name
                 if (!$firstName && !$lastName && $display) {
- // DisplayName may be "LASTNAME, Firstname" or "First Last"
+  // DisplayName may be "LASTNAME, Firstname" or "First Last"
                     if (strpos($display, ',') !== false) {
                         [$ln, $fn] = array_map('trim', explode(',', $display, 2));
                         $lastName  = $ln;
@@ -210,13 +210,13 @@ function handleQbo(string $method, ?string $sub, ?string $subId): void {
                 $zip     = trim($qc['BillAddr']['PostalCode'] ?? '');
                 try {
                     $db->beginTransaction();
- // Create user account (placeholder email if none)
+  // Create user account (placeholder email if none)
                     $loginEmail = $email ?: ('noemail_' . strtolower($lastName) . '_' . strtolower($firstName) . '_' . uniqid() . '@noemail.local');
                     $hash       = password_hash('Water2026*', PASSWORD_BCRYPT);
                     $db->prepare("INSERT INTO users (email, password_hash, role) VALUES (?, ?, 'customer')")
                        ->execute([$loginEmail, $hash]);
                     $userId = (int)$db->lastInsertId();
- // Create customer profile
+  // Create customer profile
                     $db->prepare(
                         "INSERT INTO customers (user_id, first_name, last_name, phone, email,
                                                 service_address, service_city, service_state, service_zip)
@@ -224,7 +224,7 @@ function handleQbo(string $method, ?string $sub, ?string $subId): void {
                     )->execute([$userId, $firstName, $lastName, $phone ?: null,
                                 $email ?: null, $addr ?: null, $city ?: null, $state ?: null, $zip ?: null]);
                     $customerId = (int)$db->lastInsertId();
- // Save QBO mapping so we never double-import
+  // Save QBO mapping so we never double-import
                     $db->prepare(
                         "INSERT INTO qbo_customers (customer_id, qbo_customer_id, qbo_display_name)
                          VALUES (?, ?, ?)"
@@ -238,6 +238,12 @@ function handleQbo(string $method, ?string $sub, ?string $subId): void {
                 }
             }
             sendJson(['imported' => $imported, 'skipped' => $skipped, 'errors' => $errors]);
+            break;
+
+        case 'pull-customer-invoices':
+            if ($method !== 'GET' || !$subId) sendError(400, 'Customer ID required');
+            $result = pullCustomerInvoicesFromQbo($db, $cfg, (int)$subId);
+            sendJson($result);
             break;
 
         default:
@@ -380,12 +386,14 @@ function syncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
         if (!empty($line['description']) && $line['description'] !== $line['line_name']) {
             $qboDesc .= ' - ' . $line['description'];
         }
+        $taxCodeRef = !empty($line['is_taxable']) ? ['value' => 'TAX'] : ['value' => 'NON'];
         if ($defaultItemId) {
             $lineItems[] = [
                 'Id'          => (string)$sortOrder++,
                 'DetailType'  => 'SalesItemLineDetail',
                 'Amount'      => $amt,
                 'Description' => $qboDesc,
+                'TaxCodeRef'  => $taxCodeRef,
                 'SalesItemLineDetail' => [
                     'ItemRef'  => ['value' => $defaultItemId],
                     'Qty'      => (float)$line['quantity'],
@@ -398,11 +406,12 @@ function syncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'DescriptionOnly',
                 'Amount'      => $amt,
                 'Description' => $qboDesc,
+                'TaxCodeRef'  => $taxCodeRef,
             ];
         }
     }
 
- // Card fee line
+ // Card fee line (always taxable)
     if ((float)($inv['card_fee_amount'] ?? 0) > 0) {
         $amt = (float)$inv['card_fee_amount'];
         if ($defaultItemId) {
@@ -411,6 +420,7 @@ function syncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'SalesItemLineDetail',
                 'Amount'      => $amt,
                 'Description' => 'Credit/Debit Service Fee (3.5%)',
+                'TaxCodeRef'  => ['value' => 'TAX'],
                 'SalesItemLineDetail' => [
                     'ItemRef'  => ['value' => $defaultItemId],
                     'Qty'      => 1,
@@ -423,6 +433,7 @@ function syncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'DescriptionOnly',
                 'Amount'      => $amt,
                 'Description' => 'Credit/Debit Service Fee (3.5%)',
+                'TaxCodeRef'  => ['value' => 'TAX'],
             ];
         }
     }
@@ -689,12 +700,14 @@ function forceResyncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
         if (!empty($line['description']) && $line['description'] !== $line['line_name']) {
             $qboDesc .= ' - ' . $line['description'];
         }
+        $taxCodeRef = !empty($line['is_taxable']) ? ['value' => 'TAX'] : ['value' => 'NON'];
         if ($defaultItemId) {
             $lineItems[] = [
                 'Id'          => (string)$sortOrder++,
                 'DetailType'  => 'SalesItemLineDetail',
                 'Amount'      => $amt,
                 'Description' => $qboDesc,
+                'TaxCodeRef'  => $taxCodeRef,
                 'SalesItemLineDetail' => [
                     'ItemRef'  => ['value' => $defaultItemId],
                     'Qty'      => (float)$line['quantity'],
@@ -707,6 +720,7 @@ function forceResyncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'DescriptionOnly',
                 'Amount'      => $amt,
                 'Description' => $qboDesc,
+                'TaxCodeRef'  => $taxCodeRef,
             ];
         }
     }
@@ -718,6 +732,7 @@ function forceResyncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'SalesItemLineDetail',
                 'Amount'      => $amt,
                 'Description' => 'Credit/Debit Service Fee (3.5%)',
+                'TaxCodeRef'  => ['value' => 'TAX'],
                 'SalesItemLineDetail' => [
                     'ItemRef'  => ['value' => $defaultItemId],
                     'Qty'      => 1,
@@ -730,6 +745,7 @@ function forceResyncInvoiceToQbo(PDO $db, array $cfg, int $invoiceId): array {
                 'DetailType'  => 'DescriptionOnly',
                 'Amount'      => $amt,
                 'Description' => 'Credit/Debit Service Fee (3.5%)',
+                'TaxCodeRef'  => ['value' => 'TAX'],
             ];
         }
     }
@@ -934,6 +950,92 @@ function bulkPullPaymentsFromQbo(PDO $db, array $cfg): array {
         'pulled'  => $pulled,
         'errors'  => $errors,
         'summary' => sprintf('Pulled %d payment(s) from QBO. %d error(s).', count($pulled), count($errors)),
+    ];
+}
+
+function pullCustomerInvoicesFromQbo(PDO $db, array $cfg, int $customerId): array {
+    ensureQboReady($db, $cfg);
+
+    // Get QBO customer ID for this MVP customer
+    $stmt = $db->prepare("SELECT qbo_customer_id FROM qbo_customers WHERE customer_id = ?");
+    $stmt->execute([$customerId]);
+    $qboCustId = $stmt->fetchColumn();
+
+    if (!$qboCustId) {
+        // Try to find by name match in QBO
+        $custStmt = $db->prepare(
+            "SELECT CONCAT(c.first_name,' ',c.last_name) AS name, c.email
+             FROM customers c WHERE c.customer_id = ?"
+        );
+        $custStmt->execute([$customerId]);
+        $cust = $custStmt->fetch();
+        if (!$cust) return ['error' => 'Customer not found'];
+
+        // Search QBO for matching customer
+        $escapedName = str_replace("'", "''", $cust['name']);
+        $searchResult = qboApiRequest($db, $cfg, 'GET', 'query?query=' . urlencode("select * from Customer where DisplayName like '%{$escapedName}%' MAXRESULTS 5"));
+        $qboCustomers = $searchResult['QueryResponse']['Customer'] ?? [];
+        if (empty($qboCustomers)) {
+            return ['error' => 'No matching QBO customer found. Sync this customer to QBO first.'];
+        }
+        // Use first match
+        $qboCustId = $qboCustomers[0]['Id'];
+    }
+
+    // Query QBO for all invoices for this customer
+    $qboInvoices = qboApiRequest($db, $cfg, 'GET', 'query?query=' . urlencode("select * from Invoice where CustomerRef = '$qboCustId' MAXRESULTS 100"));
+    $invoices = $qboInvoices['QueryResponse']['Invoice'] ?? [];
+
+    // Compare with existing MVP invoices
+    $stmt = $db->prepare("SELECT qbo_id FROM invoices WHERE qbo_id IS NOT NULL");
+    $stmt->execute();
+    $existingQboIds = [];
+    foreach ($stmt->fetchAll() as $row) {
+        $existingQboIds[$row['qbo_id']] = true;
+    }
+
+    $newInvoices = [];
+    $existingInvoices = [];
+
+    foreach ($invoices as $inv) {
+        $qboId = $inv['Id'] ?? null;
+        if (!$qboId) continue;
+
+        $lineItems = [];
+        foreach ($inv['Line'] ?? [] as $line) {
+            if ($line['DetailType'] === 'SalesItemLineDetail') {
+                $lineItems[] = [
+                    'description' => $line['Description'] ?? '',
+                    'amount'      => $line['Amount'] ?? 0,
+                    'qty'         => $line['SalesItemLineDetail']['Qty'] ?? 1,
+                    'item'        => $line['SalesItemLineDetail']['ItemRef']['name'] ?? '',
+                ];
+            }
+        }
+
+        $invoiceData = [
+            'qbo_id'        => $qboId,
+            'doc_number'    => $inv['DocNumber'] ?? '',
+            'txn_date'      => $inv['TxnDate'] ?? '',
+            'due_date'      => $inv['DueDate'] ?? '',
+            'total'         => $inv['TotalAmt'] ?? 0,
+            'balance'       => $inv['Balance'] ?? 0,
+            'status'        => $inv['Balance'] > 0 ? 'unpaid' : 'paid',
+            'line_items'    => $lineItems,
+        ];
+
+        if (isset($existingQboIds[$qboId])) {
+            $existingInvoices[] = $invoiceData;
+        } else {
+            $newInvoices[] = $invoiceData;
+        }
+    }
+
+    return [
+        'qbo_customer_id'   => $qboCustId,
+        'total_found'       => count($invoices),
+        'new_invoices'      => $newInvoices,
+        'existing_invoices' => $existingInvoices,
     ];
 }
 

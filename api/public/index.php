@@ -70,6 +70,18 @@ switch ($group) {
         handleBooking(getDB(), $method);
         break;
 
+    case 'iot':
+        require_once __DIR__ . '/../routes/iot.php';
+        if ($resource === 'telemetry' && $method === 'POST') {
+            handleIotTelemetry(getDB(), $method);
+            exit;
+        }
+        if ($resource === 'register' && $method === 'POST') {
+            handleIotRegister(getDB(), $method);
+            exit;
+        }
+        break;
+
     case 'auth':
         require_once __DIR__ . '/../routes/auth.php';
         routeAuth($method, $resource);
@@ -92,10 +104,40 @@ switch ($group) {
         require_once __DIR__ . '/../routes/notes.php';
         require_once __DIR__ . '/../routes/appointments.php';
         require_once __DIR__ . '/../routes/invoices.php';
+        require_once __DIR__ . '/../routes/estimates.php';
+        require_once __DIR__ . '/../routes/contracts.php';
         if ($resource === 'invoices' && $sub === 'pdf' && $method === 'GET') {
             require_once __DIR__ . '/../routes/invoice_pdf.php';
             $payload = requireRole('customer');
             handleInvoicePdf(getDB(), 'customer', (int)$id, (int)$payload['sub']);
+        }
+        if ($resource === 'estimates') {
+            $payload = requireRole('customer');
+            $customerIdStmt = getDB()->prepare("SELECT customer_id FROM customers WHERE user_id = ?");
+            $customerIdStmt->execute([$payload['sub']]);
+            $custId = $customerIdStmt->fetchColumn();
+            if (!$custId) { http_response_code(404); echo json_encode(['error' => 'Customer profile not found']); exit; }
+            handleCustomerEstimates(getDB(), $method, $id, $sub, (int)$custId);
+            exit;
+        }
+        if ($resource === 'contracts') {
+            $payload = requireRole('customer');
+            $customerIdStmt = getDB()->prepare("SELECT customer_id FROM customers WHERE user_id = ?");
+            $customerIdStmt->execute([$payload['sub']]);
+            $custId = $customerIdStmt->fetchColumn();
+            if (!$custId) { http_response_code(404); echo json_encode(['error' => 'Customer profile not found']); exit; }
+            handleCustomerContracts(getDB(), $method, $id, $sub, (int)$custId);
+            exit;
+        }
+        if ($resource === 'iot') {
+            $payload = requireRole('customer');
+            $customerIdStmt = getDB()->prepare("SELECT customer_id FROM customers WHERE user_id = ?");
+            $customerIdStmt->execute([$payload['sub']]);
+            $custId = $customerIdStmt->fetchColumn();
+            if (!$custId) { http_response_code(404); echo json_encode(['error' => 'Customer profile not found']); exit; }
+            require_once __DIR__ . '/../routes/iot.php';
+            handleCustomerIotDevices(getDB(), $method, $id, $sub, $subsub, (int)$custId);
+            exit;
         }
         routeCustomer($method, $resource, $id, $sub);
         break;
@@ -106,6 +148,8 @@ switch ($group) {
         require_once __DIR__ . '/../routes/appointments.php';
         require_once __DIR__ . '/../routes/invoices.php';
         require_once __DIR__ . '/../routes/catalog.php';
+        require_once __DIR__ . '/../routes/estimates.php';
+        require_once __DIR__ . '/../routes/contracts.php';
         if ($resource === 'invoices' && $sub === 'pdf' && $method === 'GET') {
             require_once __DIR__ . '/../routes/invoice_pdf.php';
             $payload = requireRole('technician', 'admin');
@@ -125,6 +169,12 @@ switch ($group) {
             $payload = requireRole('technician', 'admin');
             handleEmailSend(getDB(), $method, (int)$id, $sub === 'send-receipt' ? 'receipt' : 'invoice');
         }
+        if ($resource === 'iot') {
+            $payload = requireRole('technician', 'admin');
+            require_once __DIR__ . '/../routes/iot.php';
+            handleAdminIotDevices(getDB(), $method, $id, $sub, $subsub, (int)$payload['sub'], 'technician');
+            exit;
+        }
         routeTech($method, $resource, $id, $sub, $subsub);
         break;
 
@@ -132,8 +182,11 @@ switch ($group) {
         require_once __DIR__ . '/../routes/admin.php';
         require_once __DIR__ . '/../routes/notes.php';
         require_once __DIR__ . '/../routes/appointments.php';
+        require_once __DIR__ . '/../routes/settings.php';
         require_once __DIR__ . '/../routes/invoices.php';
         require_once __DIR__ . '/../routes/catalog.php';
+        require_once __DIR__ . '/../routes/estimates.php';
+        require_once __DIR__ . '/../routes/contracts.php';
         if ($resource === 'invoices' && $sub === 'pdf' && $method === 'GET') {
             require_once __DIR__ . '/../routes/invoice_pdf.php';
             $payload = requireRole('admin');
@@ -177,10 +230,16 @@ switch ($group) {
         if ($resource === 'qbo') {
             require_once __DIR__ . '/../routes/qbo.php';
             require_once __DIR__ . '/../routes/settings.php';
- // URL: /admin/qbo/{sub}/{subId}
- // $id = sub-resource (auth-url, status, sync-invoice, etc.)
- // $sub = subId (e.g. invoice ID for sync-invoice/123)
+            // URL: /admin/qbo/{sub}/{subId}
+            // $id = sub-resource (auth-url, status, sync-invoice, etc.)
+            // $sub = subId (e.g. invoice ID for sync-invoice/123)
             handleQbo($method, $id, $sub);
+            exit;
+        }
+        if ($resource === 'iot') {
+            $payload = requireRole('admin');
+            require_once __DIR__ . '/../routes/iot.php';
+            handleAdminIotDevices(getDB(), $method, $id, $sub, $subsub, (int)$payload['sub'], 'admin');
             exit;
         }
         routeAdmin($method, $resource, $id, $sub, $subsub);
