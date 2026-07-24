@@ -1686,10 +1686,6 @@
             <div id="appt-detail-tech-notes" class="card" style="font-size:13px;min-height:48px"></div>
             <div class="section-label" style="margin:16px 0 8px">Customer Notes</div>
             <div id="appt-detail-customer-notes" class="card" style="font-size:13px;min-height:48px"></div>
-          </div>
-          <div>
-            <div class="section-label" style="margin-bottom:8px">Linked Invoice</div>
-            <div id="appt-detail-invoice" class="card" style="font-size:13px;min-height:48px"></div>
             <div class="section-label" style="margin:16px 0 8px">Water Test Results</div>
             <div id="appt-detail-water-tests" class="card" style="font-size:13px;min-height:48px"></div>
             <div class="section-label" style="margin:16px 0 8px">
@@ -1697,6 +1693,11 @@
               <button class="btn btn-sm btn-blue" id="appt-photos-upload-btn" onclick="openApptImageUpload()" style="font-size:11px">+ Add Photo</button>
             </div>
             <div id="appt-detail-photos" class="card" style="font-size:13px;min-height:48px"></div>
+          </div>
+          <div>
+            <div class="section-label" style="margin-bottom:8px">Linked Invoice</div>
+            <div id="appt-detail-invoice" class="card" style="font-size:13px;min-height:48px"></div>
+            <div id="appt-invoice-expanded" style="margin-top:8px"></div>
           </div>
         </div>
       </div>
@@ -6949,24 +6950,16 @@ function renderApptDetail(a) {
 
  // Linked invoice
   const invEl = document.getElementById('appt-detail-invoice');
+  const invExpanded = document.getElementById('appt-invoice-expanded');
   if (a.invoice) {
     const inv = a.invoice;
-    const statusColors = { draft:'badge-gray', sent:'badge-blue', paid:'badge-ok', void:'badge-err' };
-    invEl.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong>${escHtml(inv.invoice_number)}</strong>
-          <span class="badge ${statusColors[inv.status] || 'badge-gray'}" style="margin-left:6px">${inv.status}</span><br>
-          <span style="color:var(--slate);font-size:11px">${inv.issue_date}</span>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:16px;font-weight:700;color:var(--water)">$${parseFloat(inv.total||0).toFixed(2)}</div>
-          ${inv.qbo_id ? '<div style="font-size:10px;color:#10b981"> QBO Synced</div>' : ''}
-        </div>
-      </div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="viewInvoiceFromAppt(${inv.invoice_id})">View Invoice </button>`;
+    invEl.innerHTML = '<div class="loading" style="padding:8px"><div class="spinner"></div></div>';
+    invExpanded.style.display = 'block';
+    loadApptInvoiceDetail(inv.invoice_id);
   } else {
     invEl.innerHTML = '<span style="color:var(--slate)">No invoice linked</span>';
+    invExpanded.style.display = 'none';
+    invExpanded.innerHTML = '';
   }
 
  // Water tests (PDF records)
@@ -6999,6 +6992,219 @@ function renderApptDetail(a) {
 async function viewInvoiceFromAppt(invoiceId) {
   showPage('invoices');
   await openAdminInvoice(invoiceId);
+}
+
+async function loadApptInvoiceDetail(invoiceId) {
+  const container = document.getElementById('appt-invoice-expanded');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const inv = await api('GET', `/admin/invoices/${invoiceId}`);
+    renderApptInvoiceInline(inv);
+  } catch (e) {
+    container.innerHTML = `<div style="color:var(--warn);font-size:13px">Failed to load invoice: ${escHtml(e.message || e)}</div>`;
+  }
+}
+
+function renderApptInvoiceInline(inv) {
+  const container = document.getElementById('appt-invoice-expanded');
+  const statusColors = { draft:'badge-gray', sent:'badge-blue', paid:'badge-ok', void:'badge-err' };
+
+  // Store lines so edit/delete functions can find them
+  window._apptInvLines = {};
+  if (inv.lines) inv.lines.forEach(l => window._apptInvLines[l.line_id] = l);
+  window._apptInvId = inv.invoice_id;
+
+  const canEdit = inv.status === 'draft' || inv.status === 'sent';
+  const linesHtml = inv.lines && inv.lines.length
+    ? `<div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr>
+            <th style="padding:6px 8px;text-align:left;border-bottom:2px solid var(--mist)">Description</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:2px solid var(--mist)">Qty</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:2px solid var(--mist)">Price</th>
+            <th style="padding:6px 8px;text-align:center;border-bottom:2px solid var(--mist)">Tax</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:2px solid var(--mist)">Total</th>
+            ${canEdit ? '<th style="padding:6px 8px;border-bottom:2px solid var(--mist)"></th>' : ''}
+          </tr></thead>
+          <tbody>${inv.lines.map(l => `<tr>
+            <td style="padding:6px 8px;border-bottom:1px solid var(--mist)">
+              <span style="font-size:9px;color:var(--slate);text-transform:uppercase">${l.line_type}</span><br>
+              <strong>${escHtml(l.line_name || l.description)}</strong>
+              ${(l.description && l.description !== l.line_name) ? `<div style="font-size:10px;color:var(--slate);margin-top:1px">${escHtml(l.description)}</div>` : ''}
+            </td>
+            <td style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--mist)">${l.quantity}</td>
+            <td style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--mist)">$${parseFloat(l.unit_price).toFixed(2)}</td>
+            <td style="padding:6px 8px;text-align:center;border-bottom:1px solid var(--mist)">${l.is_taxable ? '✓' : ''}</td>
+            <td style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--mist);font-weight:500">$${parseFloat(l.line_total).toFixed(2)}</td>
+            ${canEdit ? `<td style="padding:6px 8px;border-bottom:1px solid var(--mist);white-space:nowrap">
+              <button class="btn btn-sm btn-ghost" onclick="apptEditLine(${l.line_id})" style="font-size:10px">Edit</button>
+              <button class="btn btn-sm" style="background:var(--warn);color:#fff;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:10px;margin-left:2px" onclick="apptDeleteLine(${l.line_id})">Del</button>
+            </td>` : ''}
+          </tr>`).join('')}</tbody>
+          <tfoot>
+            <tr><td colspan="4" style="text-align:right;padding:6px 8px;font-weight:500">Subtotal</td><td style="text-align:right;padding:6px 8px">$${parseFloat(inv.subtotal).toFixed(2)}</td>${canEdit ? '<td></td>' : ''}</tr>
+            <tr><td colspan="4" style="text-align:right;padding:4px 8px;color:var(--slate)">Tax (${(parseFloat(inv.tax_rate||0)*100).toFixed(2)}%)</td><td style="text-align:right;padding:4px 8px;color:var(--slate)">$${parseFloat(inv.tax_amount).toFixed(2)}</td>${canEdit ? '<td></td>' : ''}</tr>
+            ${parseFloat(inv.card_fee_amount||0) > 0 ? `<tr><td colspan="4" style="text-align:right;padding:4px 8px;color:var(--slate)">Card Fee (3.5%)</td><td style="text-align:right;padding:4px 8px;color:var(--slate)">$${parseFloat(inv.card_fee_amount).toFixed(2)}</td>${canEdit ? '<td></td>' : ''}</tr>` : ''}
+            <tr><td colspan="4" style="text-align:right;padding:8px;font-weight:700;font-size:14px">Total</td><td style="text-align:right;padding:8px;font-weight:700;font-size:14px;color:var(--water)">$${parseFloat(inv.total).toFixed(2)}</td>${canEdit ? '<td></td>' : ''}</tr>
+          </tfoot>
+        </table>
+      </div>`
+    : '<div style="padding:8px;color:var(--slate)">No line items.</div>';
+
+  const balanceDue = parseFloat(inv.total || 0) - (inv.payments || []).reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+  const paymentsHtml = inv.payments && inv.payments.length
+    ? inv.payments.map(p => `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--mist);font-size:12px">
+        <span>${escHtml(p.payment_method.replace(/_/g,' '))} · ${p.payment_date}${p.payment_notes ? ' - ' + escHtml(p.payment_notes) : ''}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <strong>$${parseFloat(p.amount).toFixed(2)}</strong>
+          ${canEdit ? `<button class="btn btn-sm" style="background:var(--warn);color:#fff;padding:2px 6px;border-radius:4px;border:none;cursor:pointer;font-size:10px" onclick="apptDeletePayment(${p.payment_id})">Del</button>` : ''}
+        </div>
+      </div>`).join('')
+    : '<div style="color:var(--slate);font-size:12px">No payments.</div>';
+
+  container.innerHTML = `
+    <div style="padding:12px;border:1px solid var(--mist);border-radius:8px;background:var(--card)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <strong style="font-size:14px">${escHtml(inv.invoice_number)}</strong>
+          <span class="badge ${statusColors[inv.status] || 'badge-gray'}" style="margin-left:6px">${inv.status}</span>
+          ${inv.qbo_id ? '<span style="font-size:10px;color:#10b981;margin-left:6px">QBO ✓</span>' : ''}
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--slate)">Balance Due</div>
+          <div style="font-size:16px;font-weight:700;color:${balanceDue > 0 ? 'var(--warn)' : 'var(--teal)'}">$${balanceDue.toFixed(2)}</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:6px;font-size:11px">Line Items</div>
+      ${linesHtml}
+
+      ${inv.payments && inv.payments.length ? `<div class="section-label" style="margin:10px 0 6px;font-size:11px">Payments</div>${paymentsHtml}` : ''}
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        ${canEdit ? `<button class="btn btn-ghost btn-sm" onclick="apptAddLine(${inv.invoice_id})" style="font-size:11px">+ Add Item</button>` : ''}
+        ${canEdit ? `<button class="btn btn-ghost btn-sm" onclick="apptRecordPayment(${inv.invoice_id})" style="font-size:11px">+ Payment</button>` : ''}
+        ${canEdit ? `<button class="btn btn-ghost btn-sm" onclick="apptRecalculate(${inv.invoice_id})" style="font-size:11px"> Recalculate</button>` : ''}
+        ${inv.status === 'draft' ? `<button class="btn btn-ghost btn-sm" onclick="apptMarkSent(${inv.invoice_id})" style="font-size:11px">Mark Sent</button>` : ''}
+        ${inv.status !== 'paid' && inv.status !== 'void' ? `<button class="btn btn-ghost btn-sm" onclick="apptMarkPaid(${inv.invoice_id})" style="font-size:11px">Mark Paid</button>` : ''}
+        <a href="${API_URL}/admin/invoices/${inv.invoice_id}/pdf?token=${encodeURIComponent(accessToken)}" target="_blank"
+           style="font-size:11px;padding:4px 10px;border:1px solid var(--mist);border-radius:4px;text-decoration:none;color:var(--ink)">PDF</a>
+        <button class="btn btn-ghost btn-sm" onclick="viewInvoiceFromAppt(${inv.invoice_id})" style="font-size:11px;margin-left:auto">Full View →</button>
+      </div>
+    </div>`;
+}
+
+function apptEditLine(lineId) {
+  const l = window._apptInvLines?.[lineId];
+  if (!l) return toast('Line not found', 'error');
+  // Set context so the existing modal functions work
+  adminCurrentInvoiceId = window._apptInvId;
+  adminInvoiceLines = window._apptInvLines || {};
+  adminEditingLineId = lineId;
+  document.getElementById('modal-admin-line-title').textContent = 'Edit Line Item';
+  document.getElementById('admin-line-tabs').style.display = 'none';
+  ['servicecall','catalog','equipment'].forEach(t => {
+    const p = document.getElementById(`admin-linepanel-${t}`);
+    if (p) p.style.display = 'none';
+  });
+  document.getElementById('admin-linepanel-custom').style.display = 'block';
+  document.getElementById('admin-line-type').value        = l.line_type;
+  document.getElementById('admin-line-name').value        = l.line_name || l.description || '';
+  document.getElementById('admin-line-description').value = (l.line_name && l.description !== l.line_name) ? l.description : '';
+  document.getElementById('admin-line-quantity').value    = l.quantity;
+  document.getElementById('admin-line-price').value       = parseFloat(l.unit_price).toFixed(2);
+  document.getElementById('admin-line-taxable').value     = l.is_taxable ? '1' : '0';
+  openModal('modal-admin-line');
+}
+
+async function apptDeleteLine(lineId) {
+  if (!confirm('Delete this line item?')) return;
+  try {
+    await api('DELETE', `/admin/invoices/${window._apptInvId}/lines/${lineId}`);
+    toast('Line deleted');
+    await loadApptInvoiceDetail(window._apptInvId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+async function apptDeletePayment(paymentId) {
+  if (!confirm('Delete this payment?')) return;
+  try {
+    await api('DELETE', `/admin/invoices/${window._apptInvId}/payment/${paymentId}`);
+    toast('Payment deleted');
+    await loadApptInvoiceDetail(window._apptInvId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+async function apptRecalculate(invoiceId) {
+  try {
+    await api('POST', `/admin/invoices/${invoiceId}/recalculate`);
+    toast('Recalculated');
+    await loadApptInvoiceDetail(invoiceId);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+function printApptInvoice(invoiceId) {
+  window.open(`${API_URL}/admin/invoices/${invoiceId}/pdf?token=${encodeURIComponent(accessToken)}`, '_blank');
+}
+
+async function apptAddLine(invoiceId) {
+  const lineType = prompt('Line type (parts, filter, equipment, salt, service_call, labor, warranty, discount, custom):');
+  if (!lineType) return;
+  const lineName = prompt('Line name:');
+  if (!lineName) return;
+  const qty = parseFloat(prompt('Quantity:', '1')) || 1;
+  const price = parseFloat(prompt('Unit price:', '0')) || 0;
+  try {
+    await api('POST', `/admin/invoices/${invoiceId}/lines`, {
+      line_type: lineType, line_name: lineName, quantity: qty, unit_price: price, description: ''
+    });
+    toast('Line added');
+    await loadApptInvoiceDetail(invoiceId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+async function apptRecordPayment(invoiceId) {
+  const method = prompt('Payment method (cash, check, card, ach, other):', 'cash');
+  if (!method) return;
+  const amount = parseFloat(prompt('Amount:', '0')) || 0;
+  if (amount <= 0) return toast('Invalid amount', 'error');
+  const notes = prompt('Notes (optional):') || '';
+  try {
+    await api('POST', `/admin/invoices/${invoiceId}/payment`, {
+      payment_method: method, amount, payment_notes: notes
+    });
+    toast('Payment recorded');
+    await loadApptInvoiceDetail(invoiceId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+async function apptMarkSent(invoiceId) {
+  try {
+    await api('PUT', `/admin/invoices/${invoiceId}`, { status: 'sent' });
+    toast('Invoice marked sent');
+    await loadApptInvoiceDetail(invoiceId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
+}
+
+async function apptMarkPaid(invoiceId) {
+  if (!confirm('Mark this invoice as fully paid?')) return;
+  try {
+    await api('POST', `/admin/invoices/${invoiceId}/mark-paid`);
+    toast('Invoice marked paid');
+    await loadApptInvoiceDetail(invoiceId);
+    const a = await api('GET', `/admin/appointments/${adminCurrentApptId}`);
+    renderApptDetail(a);
+  } catch (e) { toast('Error: ' + (e.message || e), 'error'); }
 }
 
 async function addApptNote(customerId, appointmentId) {
@@ -7313,6 +7519,10 @@ async function submitAdminLine() {
 
     closeModal('modal-admin-line');
     await refreshAdminInvoice();
+    // Also refresh appointment inline view if open
+    if (window._apptInvId && window._apptInvId == adminCurrentInvoiceId) {
+      await loadApptInvoiceDetail(window._apptInvId);
+    }
     toast(adminEditingLineId ? 'Line updated' : 'Line added');
   } catch(e) { toast(e.message, 'error'); }
 }
